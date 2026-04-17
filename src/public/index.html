@@ -1,180 +1,313 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hardware Admin Panel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hardware Admin Panel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-<style>
-body {
-  font-family: Arial;
-  background: #eef2f7;
-  margin: 0;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #eef3f8;
+      color: #1f2937;
+    }
 
-.container {
-  max-width: 1000px;
-  margin: auto;
-  padding: 20px;
-}
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-h2 { color: #2c3e50; }
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+    }
 
-input, select, button {
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
+    h1, h2 {
+      margin-top: 0;
+      color: #1e3a5f;
+    }
 
-button {
-  background: #2c3e50;
-  color: white;
-  cursor: pointer;
-}
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
 
-.card {
-  background: white;
-  padding: 15px;
-  margin-top: 10px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-</style>
+    .row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 15px;
+    }
+
+    button {
+      background: #1e3a5f;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #274b79;
+    }
+
+    .secondary-btn {
+      background: #0f766e;
+    }
+
+    .secondary-btn:hover {
+      background: #115e59;
+    }
+
+    .record-card {
+      background: #fff;
+      border-left: 5px solid #1e3a5f;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    .record-card p {
+      margin: 6px 0;
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    #dashboard {
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      .row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
 </head>
-
 <body>
-
-<div class="container">
-
-<!-- LOGIN -->
-<div id="loginPage">
-<h2>Login</h2>
-<input id="user" placeholder="Username">
-<input id="pass" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard" style="display:none">
-
-<h2>Add Product</h2>
-
-<select id="type">
-  <option value="">Select Type</option>
-  <option>Laptop</option>
-  <option>Printer</option>
-  <option>Desktop</option>
-</select>
-
-<input id="pnum" placeholder="Product Number">
-<input id="mnum" placeholder="Model Number">
-<input id="snum" placeholder="Serial Number">
-
-<label>Date of Repair</label>
-<input type="date" id="date">
-
-<input id="cname" placeholder="Customer Name">
-<input id="phone" placeholder="Phone Number">
-
-<button onclick="add()">Add Product</button>
-
-<h2>Search</h2>
-<input id="searchBox" placeholder="Search anything">
-<button onclick="search()">Search</button>
-
-<h2>All Records</h2>
-<div id="results"></div>
-
-</div>
-</div>
-
-<script>
-
-function login(){
-  if(user.value==="admin" && pass.value==="1234"){
-    loginPage.style.display="none";
-    dashboard.style.display="block";
-    loadAll();
-  } else {
-    alert("Invalid login");
-  }
-}
-
-// ADD PRODUCT
-async function add(){
-  await fetch("/add",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      product_type:type.value,
-      product_number:pnum.value,
-      model_number:mnum.value,
-      serial_number:snum.value,
-      date_of_repair:date.value,
-      customer_name:cname.value,
-      phone_number:phone.value
-    })
-  });
-
-  alert("Added!");
-  loadAll();
-}
-
-// LOAD ALL
-async function loadAll(){
-  let res = await fetch("/products");
-  let data = await res.json();
-  display(data);
-}
-
-// SEARCH
-async function search(){
-  let val = searchBox.value.toLowerCase();
-
-  let res = await fetch("/products");
-  let data = await res.json();
-
-  let filtered = data.filter(d =>
-    d.product_type?.toLowerCase().includes(val) ||
-    d.product_number?.toLowerCase().includes(val) ||
-    d.model_number?.toLowerCase().includes(val) ||
-    d.serial_number?.toLowerCase().includes(val) ||
-    d.customer_name?.toLowerCase().includes(val) ||
-    d.phone_number?.toLowerCase().includes(val) ||
-    d.date_of_repair?.includes(val)
-  );
-
-  display(filtered);
-}
-
-// DISPLAY
-function display(data){
-  results.innerHTML="";
-
-  data.forEach(d=>{
-    results.innerHTML += `
-      <div class="card">
-        <b>${d.product_type}</b><br>
-        Product: ${d.product_number}<br>
-        Model: ${d.model_number}<br>
-        Serial: ${d.serial_number}<br>
-        Date: ${d.date_of_repair || "N/A"}<br>
-        Customer: ${d.customer_name}<br>
-        Phone: ${d.phone_number}<br>
-
-        <button onclick="editPage(${d.id})">Edit</button>
+  <div class="container">
+    <div id="loginPage" class="card">
+      <h1>Admin Login</h1>
+      <div class="grid">
+        <div>
+          <label for="user">Username</label>
+          <input id="user" type="text" placeholder="Enter username" />
+        </div>
+        <div>
+          <label for="pass">Password</label>
+          <input id="pass" type="password" placeholder="Enter password" />
+        </div>
+        <button onclick="login()">Login</button>
       </div>
-    `;
-  });
-}
+    </div>
 
-// GO TO EDIT PAGE
-function editPage(id){
-  window.location.href = "edit.html?id=" + id;
-}
+    <div id="dashboard">
+      <div class="card">
+        <h1>Hardware Admin Dashboard</h1>
+        <p>Manage repaired products, search records, and update details.</p>
+      </div>
 
-</script>
+      <div class="card">
+        <h2>Add New Product</h2>
+        <div class="row">
+          <div>
+            <label for="type">Product Type</label>
+            <select id="type">
+              <option value="">Select Type</option>
+              <option>Laptop</option>
+              <option>Printer</option>
+              <option>Desktop</option>
+            </select>
+          </div>
+          <div>
+            <label for="pnum">Product Number</label>
+            <input id="pnum" type="text" placeholder="Enter product number" />
+          </div>
+          <div>
+            <label for="mnum">Model Number</label>
+            <input id="mnum" type="text" placeholder="Enter model number" />
+          </div>
+          <div>
+            <label for="snum">Serial Number</label>
+            <input id="snum" type="text" placeholder="Enter serial number" />
+          </div>
+          <div>
+            <label for="date">Date of Repair</label>
+            <input id="date" type="date" />
+          </div>
+          <div>
+            <label for="cname">Customer Name</label>
+            <input id="cname" type="text" placeholder="Enter customer name" />
+          </div>
+          <div>
+            <label for="phone">Phone Number</label>
+            <input id="phone" type="text" placeholder="Enter phone number" />
+          </div>
+        </div>
+        <div class="actions">
+          <button onclick="add()">Add Product</button>
+        </div>
+      </div>
 
+      <div class="card">
+        <h2>Search Records</h2>
+        <div class="row">
+          <div>
+            <label for="filterType">Search by Product Type</label>
+            <select id="filterType">
+              <option value="">All Types</option>
+              <option>Laptop</option>
+              <option>Printer</option>
+              <option>Desktop</option>
+            </select>
+          </div>
+          <div>
+            <label for="searchBox">Search by Product / Model / Serial / Customer / Phone</label>
+            <input id="searchBox" type="text" placeholder="Search anything" />
+          </div>
+          <div>
+            <label for="searchDate">Search by Date of Repair</label>
+            <input id="searchDate" type="date" />
+          </div>
+        </div>
+        <div class="actions">
+          <button onclick="search()">Search</button>
+          <button class="secondary-btn" onclick="window.location.href='records.html'">View All Records</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Search Results</h2>
+        <div id="results"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function login() {
+      if (user.value === "admin" && pass.value === "1234") {
+        loginPage.style.display = "none";
+        dashboard.style.display = "block";
+      } else {
+        alert("Invalid login");
+      }
+    }
+
+    async function add() {
+      const product = {
+        product_type: type.value,
+        product_number: pnum.value,
+        model_number: mnum.value,
+        serial_number: snum.value,
+        date_of_repair: date.value,
+        customer_name: cname.value,
+        phone_number: phone.value
+      };
+
+      const res = await fetch("/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(product)
+      });
+
+      if (!res.ok) {
+        alert("Failed to add product");
+        return;
+      }
+
+      alert("Product added successfully");
+
+      type.value = "";
+      pnum.value = "";
+      mnum.value = "";
+      snum.value = "";
+      date.value = "";
+      cname.value = "";
+      phone.value = "";
+    }
+
+    async function search() {
+      const text = searchBox.value.toLowerCase().trim();
+      const typeValue = filterType.value;
+      const dateValue = searchDate.value;
+
+      const res = await fetch("/products");
+      const data = await res.json();
+
+      const filtered = data.filter((d) =>
+        (typeValue === "" || d.product_type === typeValue) &&
+        (dateValue === "" || d.date_of_repair === dateValue) &&
+        (
+          text === "" ||
+          d.product_type?.toLowerCase().includes(text) ||
+          d.product_number?.toLowerCase().includes(text) ||
+          d.model_number?.toLowerCase().includes(text) ||
+          d.serial_number?.toLowerCase().includes(text) ||
+          d.customer_name?.toLowerCase().includes(text) ||
+          d.phone_number?.toLowerCase().includes(text)
+        )
+      );
+
+      display(filtered);
+    }
+
+    function display(data) {
+      results.innerHTML = "";
+
+      if (!data.length) {
+        results.innerHTML = "<p>No matching records found.</p>";
+        return;
+      }
+
+      data.forEach((d) => {
+        results.innerHTML += `
+          <div class="record-card">
+            <p><strong>Product Type:</strong> ${d.product_type || ""}</p>
+            <p><strong>Product Number:</strong> ${d.product_number || ""}</p>
+            <p><strong>Model Number:</strong> ${d.model_number || ""}</p>
+            <p><strong>Serial Number:</strong> ${d.serial_number || ""}</p>
+            <p><strong>Date of Repair:</strong> ${d.date_of_repair || ""}</p>
+            <p><strong>Customer Name:</strong> ${d.customer_name || ""}</p>
+            <p><strong>Phone Number:</strong> ${d.phone_number || ""}</p>
+            <div class="actions">
+              <button onclick="goToEdit(${d.id})">Edit</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function goToEdit(id) {
+      window.location.href = `edit.html?id=${id}`;
+    }
+  </script>
 </body>
 </html>
