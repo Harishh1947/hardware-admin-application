@@ -62,6 +62,16 @@ app.put("/update/:id", async (req, res) => {
 
   res.json(data);
 });
+app.delete("/delete/:id", async (req, res) => {
+  const { error } = await supabase
+    .from("products")
+    .delete()
+    .eq("id", req.params.id);
+
+  if (error) return res.status(500).send(error);
+
+  res.send({ message: "Deleted" });
+});
 
 app.listen(3000, () => console.log("Server running"));
 // DELETE PRODUCT
