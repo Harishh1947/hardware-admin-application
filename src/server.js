@@ -10,34 +10,21 @@ app.use(express.static("public"));
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// ADD
+// ADD PRODUCT
 app.post("/add", async (req, res) => {
   const { data, error } = await supabase.from("products").insert([req.body]);
   if (error) return res.status(500).send(error);
   res.send(data);
 });
 
-// GET ALL
+// GET ALL PRODUCTS
 app.get("/products", async (req, res) => {
-  const { data, error } = await supabase.from("products").select("*");
+  const { data, error } = await supabase.from("products").select("*").order("id", { ascending: false });
   if (error) return res.status(500).send(error);
   res.send(data);
 });
 
-// SEARCH
-app.get("/search/:value", async (req, res) => {
-  const v = req.params.value;
-
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .or(`serial_number.ilike.%${v}%,product_number.ilike.%${v}%,model_number.ilike.%${v}%`);
-
-  if (error) return res.status(500).send(error);
-  res.send(data);
-});
-
-// UPDATE
+// UPDATE PRODUCT (FULL EDIT)
 app.put("/update/:id", async (req, res) => {
   const { data, error } = await supabase
     .from("products")
@@ -48,4 +35,4 @@ app.put("/update/:id", async (req, res) => {
   res.send(data);
 });
 
-app.listen(3000, () => console.log("Server running"));
+app.listen(3000, () => console.log("Server running on port 3000"));
