@@ -17,9 +17,7 @@ body {
   padding: 20px;
 }
 
-h2 {
-  color: #2c3e50;
-}
+h2 { color: #2c3e50; }
 
 input, select, button {
   padding: 10px;
@@ -42,15 +40,6 @@ button {
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
-
-.flex {
-  display: flex;
-  gap: 10px;
-}
-
-@media(max-width:600px){
-  .flex { flex-direction: column; }
-}
 </style>
 </head>
 
@@ -60,7 +49,7 @@ button {
 
 <!-- LOGIN -->
 <div id="loginPage">
-<h2>Admin Login</h2>
+<h2>Login</h2>
 <input id="user" placeholder="Username">
 <input id="pass" type="password" placeholder="Password">
 <button onclick="login()">Login</button>
@@ -82,7 +71,7 @@ button {
 <input id="mnum" placeholder="Model Number">
 <input id="snum" placeholder="Serial Number">
 
-<label><b>Date of Repair</b></label>
+<label>Date of Repair</label>
 <input type="date" id="date">
 
 <input id="cname" placeholder="Customer Name">
@@ -90,16 +79,8 @@ button {
 
 <button onclick="add()">Add Product</button>
 
-<h2>Search & Filter</h2>
-
-<select id="filterType">
-  <option value="">All Types</option>
-  <option>Laptop</option>
-  <option>Printer</option>
-  <option>Desktop</option>
-</select>
-
-<input id="searchBox" placeholder="Search anything...">
+<h2>Search</h2>
+<input id="searchBox" placeholder="Search anything">
 <button onclick="search()">Search</button>
 
 <h2>All Records</h2>
@@ -120,7 +101,7 @@ function login(){
   }
 }
 
-// ADD
+// ADD PRODUCT
 async function add(){
   await fetch("/add",{
     method:"POST",
@@ -147,24 +128,21 @@ async function loadAll(){
   display(data);
 }
 
-// SEARCH (ALL FIELDS)
+// SEARCH
 async function search(){
   let val = searchBox.value.toLowerCase();
-  let typeFilter = filterType.value;
 
   let res = await fetch("/products");
   let data = await res.json();
 
   let filtered = data.filter(d =>
-    (typeFilter==="" || d.product_type===typeFilter) &&
-    (
-      d.product_number?.toLowerCase().includes(val) ||
-      d.model_number?.toLowerCase().includes(val) ||
-      d.serial_number?.toLowerCase().includes(val) ||
-      d.customer_name?.toLowerCase().includes(val) ||
-      d.phone_number?.toLowerCase().includes(val) ||
-      d.date_of_repair?.includes(val)
-    )
+    d.product_type?.toLowerCase().includes(val) ||
+    d.product_number?.toLowerCase().includes(val) ||
+    d.model_number?.toLowerCase().includes(val) ||
+    d.serial_number?.toLowerCase().includes(val) ||
+    d.customer_name?.toLowerCase().includes(val) ||
+    d.phone_number?.toLowerCase().includes(val) ||
+    d.date_of_repair?.includes(val)
   );
 
   display(filtered);
@@ -175,44 +153,25 @@ function display(data){
   results.innerHTML="";
 
   data.forEach(d=>{
-    results.innerHTML+=`
-    <div class="card">
-      <b>${d.product_type}</b><br>
-      Product: ${d.product_number}<br>
-      Model: ${d.model_number}<br>
-      Serial: ${d.serial_number}<br>
-      Date: ${d.date_of_repair || "N/A"}<br>
-      Customer: ${d.customer_name}<br>
-      Phone: ${d.phone_number}<br>
+    results.innerHTML += `
+      <div class="card">
+        <b>${d.product_type}</b><br>
+        Product: ${d.product_number}<br>
+        Model: ${d.model_number}<br>
+        Serial: ${d.serial_number}<br>
+        Date: ${d.date_of_repair || "N/A"}<br>
+        Customer: ${d.customer_name}<br>
+        Phone: ${d.phone_number}<br>
 
-      <button onclick="edit(${d.id})">Edit</button>
-    </div>
+        <button onclick="editPage(${d.id})">Edit</button>
+      </div>
     `;
   });
 }
 
-// EDIT FULL DATA
-async function edit(id){
-  let product = prompt("Product Number:");
-  let model = prompt("Model Number:");
-  let serial = prompt("Serial Number:");
-  let name = prompt("Customer Name:");
-  let phone = prompt("Phone:");
-
-  await fetch("/update/"+id,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      product_number:product,
-      model_number:model,
-      serial_number:serial,
-      customer_name:name,
-      phone_number:phone
-    })
-  });
-
-  alert("Updated!");
-  loadAll();
+// GO TO EDIT PAGE
+function editPage(id){
+  window.location.href = "edit.html?id=" + id;
 }
 
 </script>
