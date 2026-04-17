@@ -214,6 +214,8 @@
   <script>
     function login() {
       if (user.value === "admin" && pass.value === "1234") {
+        localStorage.setItem("isLoggedIn", "true");
+        
         loginPage.style.display = "none";
         dashboard.style.display = "block";
       } else {
