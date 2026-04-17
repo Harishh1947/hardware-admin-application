@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+</head>
+<body>
+
+<h2>Login</h2>
+<input id="user" placeholder="Username">
+<input id="pass" placeholder="Password" type="password">
+<button onclick="login()">Login</button>
+
+<div id="dashboard" style="display:none">
+
+<h2>Add Product</h2>
+
+<select id="type">
+  <option>Laptop</option>
+  <option>Printer</option>
+  <option>Desktop</option>
+</select>
+
+<input placeholder="Product Number" id="pnum">
+<input placeholder="Model Number" id="mnum">
+<input placeholder="Serial Number" id="snum">
+<input type="date" id="date">
+<input placeholder="Customer Name" id="cname">
+<input placeholder="Phone" id="phone">
+
+<button onclick="add()">Add</button>
+
+<h2>Search</h2>
+<input id="searchBox">
+<button onclick="search()">Search</button>
+
+<pre id="results"></pre>
+
+</div>
+
+<script>
+const API = "";
+
+async function login() {
+  let res = await fetch("/login", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      username: user.value,
+      password: pass.value
+    })
+  });
+
+  let data = await res.json();
+
+  if (data.success) {
+    dashboard.style.display = "block";
+  } else {
+    alert("Invalid login");
+  }
+}
+
+async function add() {
+  await fetch("/add", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      product_type: type.value,
+      product_number: pnum.value,
+      model_number: mnum.value,
+      serial_number: snum.value,
+      date_of_repair: date.value,
+      customer_name: cname.value,
+      phone_number: phone.value
+    })
+  });
+  alert("Added!");
+}
+
+async function search() {
+  let val = searchBox.value;
+  let res = await fetch("/search/" + val);
+  let data = await res.json();
+
+  results.innerText = JSON.stringify(data, null, 2);
+}
+</script>
+
+</body>
+</html>
