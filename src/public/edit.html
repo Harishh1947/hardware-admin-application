@@ -1,125 +1,204 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Edit Product</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Product</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-<style>
-body {
-  font-family: Arial;
-  background: #f4f6f9;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #eef3f8;
+      color: #1f2937;
+    }
 
-.container {
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
-}
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-.field {
-  background: white;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
 
-input {
-  border: none;
-  outline: none;
-  width: 80%;
-  font-size: 16px;
-}
+    h1 {
+      color: #1e3a5f;
+      margin-top: 0;
+    }
 
-.edit-btn {
-  cursor: pointer;
-  font-size: 18px;
-}
+    .field {
+      margin-bottom: 16px;
+    }
 
-button {
-  padding: 12px;
-  width: 100%;
-  background: #2c3e50;
-  color: white;
-  border: none;
-  margin-top: 20px;
-}
-</style>
+    .field-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #334155;
+    }
+
+    .edit-icon {
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 15px;
+      background: #f8fafc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #1e3a5f;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #274b79;
+    }
+
+    .top-actions {
+      margin-bottom: 16px;
+    }
+
+    .back-btn {
+      background: #0f766e;
+    }
+
+    .back-btn:hover {
+      background: #115e59;
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <div class="top-actions">
+      <button class="back-btn" onclick="window.location.href='records.html'">Back to Records</button>
+    </div>
 
-<div class="container">
+    <div class="card">
+      <h1>Edit Product</h1>
+      <div id="form"></div>
+      <button onclick="updateRecord()">Commit Changes</button>
+    </div>
+  </div>
 
-<h2>Edit Product</h2>
+  <script>
+    let productId;
+    let dataObj = {};
 
-<div id="form"></div>
+    async function load() {
+      const params = new URLSearchParams(window.location.search);
+      productId = params.get("id");
 
-<button onclick="update()">Commit Changes</button>
+      const res = await fetch("/products");
+      const data = await res.json();
+      dataObj = data.find((d) => d.id == productId);
 
-</div>
+      if (!dataObj) {
+        document.getElementById("form").innerHTML = "<p>Record not found.</p>";
+        return;
+      }
 
-<script>
+      render();
+    }
 
-let productId;
-let dataObj = {};
+    function render() {
+      form.innerHTML = `
+        ${createSelectField("Product Type", "product_type", dataObj.product_type)}
+        ${createInputField("Product Number", "product_number", dataObj.product_number, "text")}
+        ${createInputField("Model Number", "model_number", dataObj.model_number, "text")}
+        ${createInputField("Serial Number", "serial_number", dataObj.serial_number, "text")}
+        ${createInputField("Date of Repair", "date_of_repair", dataObj.date_of_repair, "date")}
+        ${createInputField("Customer Name", "customer_name", dataObj.customer_name, "text")}
+        ${createInputField("Phone Number", "phone_number", dataObj.phone_number, "text")}
+      `;
+    }
 
-async function load() {
-  const params = new URLSearchParams(window.location.search);
-  productId = params.get("id");
+    function createInputField(label, id, value, type) {
+      return `
+        <div class="field">
+          <div class="field-header">
+            <label for="${id}">${label}</label>
+            <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
+          </div>
+          <input id="${id}" type="${type}" value="${value || ""}" disabled />
+        </div>
+      `;
+    }
 
-  let res = await fetch("/products");
-  let data = await res.json();
+    function createSelectField(label, id, value) {
+      return `
+        <div class="field">
+          <div class="field-header">
+            <label for="${id}">${label}</label>
+            <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
+          </div>
+          <select id="${id}" disabled>
+            <option value="Laptop" ${value === "Laptop" ? "selected" : ""}>Laptop</option>
+            <option value="Printer" ${value === "Printer" ? "selected" : ""}>Printer</option>
+            <option value="Desktop" ${value === "Desktop" ? "selected" : ""}>Desktop</option>
+          </select>
+        </div>
+      `;
+    }
 
-  dataObj = data.find(d => d.id == productId);
+    function enableField(id) {
+      const field = document.getElementById(id);
+      field.disabled = false;
+      field.focus();
+    }
 
-  render();
-}
+    async function updateRecord() {
+      const updated = {
+        product_type: document.getElementById("product_type").value,
+        product_number: document.getElementById("product_number").value,
+        model_number: document.getElementById("model_number").value,
+        serial_number: document.getElementById("serial_number").value,
+        date_of_repair: document.getElementById("date_of_repair").value,
+        customer_name: document.getElementById("customer_name").value,
+        phone_number: document.getElementById("phone_number").value
+      };
 
-function render() {
-  form.innerHTML = "";
+      const res = await fetch("/update/" + productId, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated)
+      });
 
-  for (let key in dataObj) {
-    if (key === "id") continue;
+      if (!res.ok) {
+        alert("Failed to update record");
+        return;
+      }
 
-    form.innerHTML += `
-      <div class="field">
-        <input id="${key}" value="${dataObj[key] || ""}" disabled>
-        <span class="edit-btn" onclick="enable('${key}')">✏️</span>
-      </div>
-    `;
-  }
-}
+      alert("Record updated successfully");
+      window.location.href = "records.html";
+    }
 
-function enable(id) {
-  document.getElementById(id).disabled = false;
-  document.getElementById(id).focus();
-}
-
-async function update() {
-  let updated = {};
-
-  for (let key in dataObj) {
-    if (key === "id") continue;
-    updated[key] = document.getElementById(key).value;
-  }
-
-  await fetch("/update/" + productId, {
-    method: "PUT",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify(updated)
-  });
-
-  alert("Updated!");
-  window.location.href = "/";
-}
-
-load();
-
-</script>
-
+    load();
+  </script>
 </body>
 </html>
