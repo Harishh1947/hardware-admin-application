@@ -10,43 +10,41 @@ app.use(express.static("public"));
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// LOGIN (simple)
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-
-  if (username === "admin" && password === "1234") {
-    res.send({ success: true });
-  } else {
-    res.send({ success: false });
-  }
-});
-
-// ADD PRODUCT
+// ADD
 app.post("/add", async (req, res) => {
   const { data, error } = await supabase.from("products").insert([req.body]);
-  if (error) return res.send(error);
+  if (error) return res.status(500).send(error);
+  res.send(data);
+});
+
+// GET ALL
+app.get("/products", async (req, res) => {
+  const { data, error } = await supabase.from("products").select("*");
+  if (error) return res.status(500).send(error);
   res.send(data);
 });
 
 // SEARCH
 app.get("/search/:value", async (req, res) => {
-  const value = req.params.value;
+  const v = req.params.value;
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("products")
     .select("*")
-    .or(`serial_number.eq.${value},product_number.eq.${value},model_number.eq.${value}`);
+    .or(`serial_number.ilike.%${v}%,product_number.ilike.%${v}%,model_number.ilike.%${v}%`);
 
+  if (error) return res.status(500).send(error);
   res.send(data);
 });
 
 // UPDATE
 app.put("/update/:id", async (req, res) => {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("products")
     .update(req.body)
     .eq("id", req.params.id);
 
+  if (error) return res.status(500).send(error);
   res.send(data);
 });
 
