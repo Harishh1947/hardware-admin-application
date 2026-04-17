@@ -2,45 +2,45 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hardware Admin</title>
+<title>Hardware Admin Panel</title>
 
 <style>
 body {
   font-family: Arial;
-  background: #f5f6fa;
+  background: #eef2f7;
   margin: 0;
 }
 
 .container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: auto;
   padding: 20px;
 }
 
 h2 {
-  color: #2f3640;
+  color: #2c3e50;
 }
 
 input, select, button {
   padding: 10px;
   margin: 5px 0;
   width: 100%;
-  border-radius: 5px;
+  border-radius: 6px;
   border: 1px solid #ccc;
 }
 
 button {
-  background: #273c75;
+  background: #2c3e50;
   color: white;
-  border: none;
+  cursor: pointer;
 }
 
 .card {
   background: white;
   padding: 15px;
   margin-top: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .flex {
@@ -49,9 +49,7 @@ button {
 }
 
 @media(max-width:600px){
-  .flex {
-    flex-direction: column;
-  }
+  .flex { flex-direction: column; }
 }
 </style>
 </head>
@@ -62,7 +60,7 @@ button {
 
 <!-- LOGIN -->
 <div id="loginPage">
-<h2>Login</h2>
+<h2>Admin Login</h2>
 <input id="user" placeholder="Username">
 <input id="pass" type="password" placeholder="Password">
 <button onclick="login()">Login</button>
@@ -74,7 +72,7 @@ button {
 <h2>Add Product</h2>
 
 <select id="type">
-  <option value="">Select Product Type</option>
+  <option value="">Select Type</option>
   <option>Laptop</option>
   <option>Printer</option>
   <option>Desktop</option>
@@ -84,7 +82,7 @@ button {
 <input id="mnum" placeholder="Model Number">
 <input id="snum" placeholder="Serial Number">
 
-<label>Date of Repair</label>
+<label><b>Date of Repair</b></label>
 <input type="date" id="date">
 
 <input id="cname" placeholder="Customer Name">
@@ -92,7 +90,7 @@ button {
 
 <button onclick="add()">Add Product</button>
 
-<h2>Search / Filter</h2>
+<h2>Search & Filter</h2>
 
 <select id="filterType">
   <option value="">All Types</option>
@@ -102,17 +100,16 @@ button {
 </select>
 
 <input id="searchBox" placeholder="Search anything...">
-
 <button onclick="search()">Search</button>
 
 <h2>All Records</h2>
 <div id="results"></div>
 
 </div>
-
 </div>
 
 <script>
+
 function login(){
   if(user.value==="admin" && pass.value==="1234"){
     loginPage.style.display="none";
@@ -123,6 +120,7 @@ function login(){
   }
 }
 
+// ADD
 async function add(){
   await fetch("/add",{
     method:"POST",
@@ -142,12 +140,14 @@ async function add(){
   loadAll();
 }
 
+// LOAD ALL
 async function loadAll(){
   let res = await fetch("/products");
   let data = await res.json();
   display(data);
 }
 
+// SEARCH (ALL FIELDS)
 async function search(){
   let val = searchBox.value.toLowerCase();
   let typeFilter = filterType.value;
@@ -170,6 +170,7 @@ async function search(){
   display(filtered);
 }
 
+// DISPLAY
 function display(data){
   results.innerHTML="";
 
@@ -190,14 +191,21 @@ function display(data){
   });
 }
 
+// EDIT FULL DATA
 async function edit(id){
-  let name = prompt("New Customer Name:");
-  let phone = prompt("New Phone:");
+  let product = prompt("Product Number:");
+  let model = prompt("Model Number:");
+  let serial = prompt("Serial Number:");
+  let name = prompt("Customer Name:");
+  let phone = prompt("Phone:");
 
   await fetch("/update/"+id,{
     method:"PUT",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
+      product_number:product,
+      model_number:model,
+      serial_number:serial,
       customer_name:name,
       phone_number:phone
     })
@@ -206,6 +214,7 @@ async function edit(id){
   alert("Updated!");
   loadAll();
 }
+
 </script>
 
 </body>
