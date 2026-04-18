@@ -292,7 +292,24 @@ async function search(){
     let matchField = true;
 
     if(field && value){
-      matchField = String(d[field] || "").toLowerCase().includes(value);
+
+      // ✅ Exact match (NO partial)
+      if(
+        field === "id" ||
+        field === "product_number" ||
+        field === "model_number" ||
+        field === "serial_number"
+      ){
+        matchField = String(d[field]) === value;
+      }
+
+      // ✅ Partial match ONLY for name & phone
+      else if(
+        field === "customer_name" ||
+        field === "phone_number"
+      ){
+        matchField = String(d[field] || "").toLowerCase().includes(value);
+      }
     }
 
     const matchType =
@@ -321,7 +338,7 @@ function display(data){
     results.innerHTML += `
       <div class="record-card">
         <p><b>${d.product_type}</b></p>
-        <p><strong>Unique ID:</strong> ${d.unique_id || ""}</p>
+        <p><strong>Unique ID:</strong> ${d.id || ""}</p>
         Product: ${d.product_number}<br>
         Model: ${d.model_number}<br>
         Serial: ${d.serial_number}<br>
