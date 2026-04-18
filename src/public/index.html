@@ -121,6 +121,12 @@ button:hover {
       </div>
 
       <div>
+        <label>Unique ID</label>
+        <input id="uid">
+      </div>
+    
+
+      <div>
         <label>Product Number</label>
         <input id="pnum">
       </div>
@@ -148,6 +154,11 @@ button:hover {
       <div>
         <label>Phone Number</label>
         <input id="phone">
+      </div>
+
+      <div>
+        <label>Repair Details</label>
+        <textarea id="repair" rows="4"></textarea>
       </div>
     </div>
 
@@ -219,12 +230,14 @@ function logout(){
 async function add(){
   const product={
     product_type:type.value,
+    unique_id: uid.value,
     product_number:pnum.value,
     model_number:mnum.value,
     serial_number:snum.value,
     date_of_repair:date.value,
     customer_name:cname.value,
     phone_number:phone.value
+    repair_details:repair.value
   };
 
   const res=await fetch("/add",{
@@ -241,12 +254,14 @@ async function add(){
   alert("Added!");
 
   type.value="";
+  uid.value="";
   pnum.value="";
   mnum.value="";
   snum.value="";
   date.value="";
   cname.value="";
   phone.value="";
+  repair.value="";
 }
 
 // SEARCH
@@ -263,6 +278,7 @@ async function search(){
     (dateVal===""||d.date_of_repair===dateVal)&&
     (
       d.product_type?.toLowerCase().includes(text)||
+      d.unique_id?.toLowerCase().includes(text) ||
       d.product_number?.toLowerCase().includes(text)||
       d.model_number?.toLowerCase().includes(text)||
       d.serial_number?.toLowerCase().includes(text)||
@@ -287,12 +303,14 @@ function display(data){
     results.innerHTML+=`
       <div class="record-card">
         <p><b>${d.product_type}</b></p>
+        <p><strong>Unique ID:</strong> ${d.unique_id || ""}</p>
         Product: ${d.product_number}<br>
         Model: ${d.model_number}<br>
         Serial: ${d.serial_number}<br>
         Date: ${d.date_of_repair}<br>
         Customer: ${d.customer_name}<br>
         Phone: ${d.phone_number}<br>
+        <p><strong>Repair Details:</strong> ${d.repair_details || ""}</p>
 
         <div class="actions">
           <button onclick="goToEdit(${d.id})">Edit</button>
