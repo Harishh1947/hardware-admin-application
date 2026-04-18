@@ -280,7 +280,7 @@ async function add(){
 // SEARCH
 async function search(){
   const field = document.getElementById("searchField").value;
-  const value = document.getElementById("searchValue").value.toLowerCase();
+  const value = document.getElementById("searchValue").value.trim().toLowerCase();
   const typeVal = document.getElementById("filterType").value;
   const dateVal = document.getElementById("searchDate").value;
 
@@ -293,22 +293,24 @@ async function search(){
 
     if(field && value){
 
-      // ✅ Exact match (NO partial)
+      const fieldValue = String(d[field] || "").trim().toLowerCase();
+
+      // ✅ Exact match (cleaned)
       if(
         field === "id" ||
         field === "product_number" ||
         field === "model_number" ||
         field === "serial_number"
       ){
-        matchField = String(d[field]) === value;
+        matchField = fieldValue === value;
       }
 
-      // ✅ Partial match ONLY for name & phone
+      // ✅ Partial match (only for name & phone)
       else if(
         field === "customer_name" ||
         field === "phone_number"
       ){
-        matchField = String(d[field] || "").toLowerCase().includes(value);
+        matchField = fieldValue.includes(value);
       }
     }
 
