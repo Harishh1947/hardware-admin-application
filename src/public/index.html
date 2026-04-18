@@ -239,7 +239,7 @@ async function add(){
     serial_number:snum.value,
     date_of_repair:date.value,
     customer_name:cname.value,
-    phone_number:phone.value
+    phone_number:phone.value,
     repair_details:repair.value
   };
 
@@ -295,15 +295,16 @@ async function search(){
 
 // DISPLAY
 function display(data){
-  document.getElementById("results").innerHTML=""
+  const results = document.getElementById("results");
+  results.innerHTML = "";
 
   if(!data.length){
-    results.innerHTML="No data found";
+    results.innerHTML = "No data found";
     return;
   }
 
   data.forEach(d=>{
-    results.innerHTML+=`
+    results.innerHTML += `
       <div class="record-card">
         <p><b>${d.product_type}</b></p>
         <p><strong>Unique ID:</strong> ${d.unique_id || ""}</p>
@@ -323,6 +324,7 @@ function display(data){
     `;
   });
 }
+  
 
 // EDIT
 function goToEdit(id){
