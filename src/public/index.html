@@ -215,8 +215,8 @@ function login(){
 // AUTO LOGIN
 window.onload = function(){
   if(localStorage.getItem("isLoggedIn")==="true"){
-    loginPage.style.display="none";
-    dashboard.style.display="block";
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("dashboard").style.display="block";
   }
 };
 
