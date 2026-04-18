@@ -203,10 +203,14 @@ button:hover {
 
 // LOGIN
 function login(){
-  if(user.value==="admin" && pass.value==="1234"){
+  const u = document.getElementById("user").value;
+  const p = document.getElementById("pass").value;
+
+  if(u === "admin" && p === "1234"){
     localStorage.setItem("isLoggedIn","true");
-    loginPage.style.display="none";
-    dashboard.style.display="block";
+
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
   } else {
     alert("Invalid login");
   }
@@ -266,33 +270,33 @@ async function add(){
 
 // SEARCH
 async function search(){
-  const text=searchBox.value.toLowerCase();
-  const typeVal=filterType.value;
-  const dateVal=searchDate.value;
+  const text = document.getElementById("searchBox").value.toLowerCase();
+  const typeVal = document.getElementById("filterType").value;
+  const dateVal = document.getElementById("searchDate").value;
 
-  const res=await fetch("/products");
-  const data=await res.json();
+  const res = await fetch("/products");
+  const data = await res.json();
 
-  const filtered=data.filter(d=>
-    (typeVal===""||d.product_type===typeVal)&&
-    (dateVal===""||d.date_of_repair===dateVal)&&
+  const filtered = data.filter(d =>
+    (typeVal === "" || d.product_type === typeVal) &&
+    (dateVal === "" || d.date_of_repair === dateVal) &&
     (
-      d.product_type?.toLowerCase().includes(text)||
       d.unique_id?.toLowerCase().includes(text) ||
-      d.product_number?.toLowerCase().includes(text)||
-      d.model_number?.toLowerCase().includes(text)||
-      d.serial_number?.toLowerCase().includes(text)||
-      d.customer_name?.toLowerCase().includes(text)||
+      d.product_type?.toLowerCase().includes(text) ||
+      d.product_number?.toLowerCase().includes(text) ||
+      d.model_number?.toLowerCase().includes(text) ||
+      d.serial_number?.toLowerCase().includes(text) ||
+      d.customer_name?.toLowerCase().includes(text) ||
       d.phone_number?.toLowerCase().includes(text)
     )
   );
 
   display(filtered);
-}
+  }
 
 // DISPLAY
 function display(data){
-  results.innerHTML="";
+  document.getElementById("results").innerHTML=""
 
   if(!data.length){
     results.innerHTML="No data found";
