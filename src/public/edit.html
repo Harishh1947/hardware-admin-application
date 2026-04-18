@@ -127,7 +127,7 @@
     }
 
     function render() {
-      form.innerHTML = `
+      document.getElementById("form").innerHTML = `
         ${createSelectField("Product Type", "product_type", dataObj.product_type)}
         ${createInputField("Product Number", "product_number", dataObj.product_number, "text")}
         ${createInputField("Model Number", "model_number", dataObj.model_number, "text")}
@@ -194,7 +194,7 @@
         serial_number: document.getElementById("serial_number").value,
         date_of_repair: document.getElementById("date_of_repair").value,
         customer_name: document.getElementById("customer_name").value,
-        phone_number: document.getElementById("phone_number").value
+        phone_number: document.getElementById("phone_number").value,
         repair_details: document.getElementById("repair_details").value
       };
 
