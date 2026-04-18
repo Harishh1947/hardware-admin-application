@@ -295,7 +295,7 @@ async function search(){
     let matchField = true;
 
     if(field && value){
-      matchField = (d[field] || "").toLowerCase().includes(value);
+      matchField = String(d[field] || "").toLowerCase().includes(value);
     }
 
     const matchType =
