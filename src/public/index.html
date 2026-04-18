@@ -269,29 +269,36 @@ async function add(){
 
 // SEARCH
 async function search(){
-  const text = document.getElementById("searchBox").value.toLowerCase();
+  const text = document.getElementById("searchBox").value.toLowerCase().trim();
   const typeVal = document.getElementById("filterType").value;
   const dateVal = document.getElementById("searchDate").value;
 
   const res = await fetch("/products");
   const data = await res.json();
 
-  const filtered = data.filter(d =>
-    (typeVal === "" || d.product_type === typeVal) &&
-    (dateVal === "" || d.date_of_repair === dateVal) &&
-    (
-      d.unique_id?.toLowerCase().includes(text) ||
-      d.product_type?.toLowerCase().includes(text) ||
-      d.product_number?.toLowerCase().includes(text) ||
-      d.model_number?.toLowerCase().includes(text) ||
-      d.serial_number?.toLowerCase().includes(text) ||
-      d.customer_name?.toLowerCase().includes(text) ||
-      d.phone_number?.toLowerCase().includes(text)
-    )
-  );
+  const filtered = data.filter(d => {
+
+    const matchText =
+      !text ||
+      (d.unique_id || "").toLowerCase().includes(text) ||
+      (d.product_type || "").toLowerCase().includes(text) ||
+      (d.product_number || "").toLowerCase().includes(text) ||
+      (d.model_number || "").toLowerCase().includes(text) ||
+      (d.serial_number || "").toLowerCase().includes(text) ||
+      (d.customer_name || "").toLowerCase().includes(text) ||
+      (d.phone_number || "").toLowerCase().includes(text);
+
+    const matchType =
+      !typeVal || d.product_type === typeVal;
+
+    const matchDate =
+      !dateVal || d.date_of_repair === dateVal;
+
+    return matchText && matchType && matchDate;
+  });
 
   display(filtered);
-  }
+}
 
 // DISPLAY
 function display(data){
