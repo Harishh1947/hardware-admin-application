@@ -147,11 +147,18 @@
             <div class="field-header">
               <label>${label}</label>
               <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
-            </div>
-            <textarea id="${id}" disabled>${value || ""}</textarea>
           </div>
-        `;
-      }
+          <textarea id="${id}" disabled style="
+            width:100%;
+            min-height:180px;
+            padding:12px;
+            border-radius:8px;
+            border:1px solid #ccc;
+            resize: vertical;
+          ">${value || ""}</textarea>
+        </div>
+      `;
+    }
 
       return `
         <div class="field">
