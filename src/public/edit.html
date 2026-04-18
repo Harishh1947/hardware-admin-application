@@ -135,14 +135,28 @@
         ${createInputField("Date of Repair", "date_of_repair", dataObj.date_of_repair, "date")}
         ${createInputField("Customer Name", "customer_name", dataObj.customer_name, "text")}
         ${createInputField("Phone Number", "phone_number", dataObj.phone_number, "text")}
+        ${createInputField("Repair Details", "repair_details", dataObj.repair_details, "textarea")}
       `;
     }
 
-    function createInputField(label, id, value, type) {
+    function createInputField(label, id, value, type="text") {
+
+      if(type === "textarea"){
+        return `
+          <div class="field">
+            <div class="field-header">
+              <label>${label}</label>
+              <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
+            </div>
+            <textarea id="${id}" disabled>${value || ""}</textarea>
+          </div>
+        `;
+      }
+
       return `
         <div class="field">
           <div class="field-header">
-            <label for="${id}">${label}</label>
+            <label>${label}</label>
             <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
           </div>
           <input id="${id}" type="${type}" value="${value || ""}" disabled />
@@ -181,6 +195,7 @@
         date_of_repair: document.getElementById("date_of_repair").value,
         customer_name: document.getElementById("customer_name").value,
         phone_number: document.getElementById("phone_number").value
+        repair_details: document.getElementById("repair_details").value
       };
 
       const res = await fetch("/update/" + productId, {
