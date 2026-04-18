@@ -177,8 +177,21 @@ button:hover {
       <option>Desktop</option>
     </select>
 
-    <label>Search Text</label>
-    <input id="searchBox">
+    <!-- 🔹 Search By Field -->
+    <label>Search By</label>
+    <select id="searchField">
+      <option value="">Select Field</option>
+      <option value="unique_id">Unique ID</option>
+      <option value="product_number">Product Number</option>
+      <option value="model_number">Model Number</option>
+      <option value="serial_number">Serial Number</option>
+      <option value="customer_name">Customer Name</option>
+      <option value="phone_number">Phone Number</option>
+    </select>
+
+    <!-- 🔹 Input -->
+    <label>Enter Value</label>
+    <input id="searchValue" placeholder="Enter value">
 
     <label>Date</label>
     <input type="date" id="searchDate">
@@ -269,7 +282,8 @@ async function add(){
 
 // SEARCH
 async function search(){
-  const text = document.getElementById("searchBox").value.toLowerCase().trim();
+  const field = document.getElementById("searchField").value;
+  const value = document.getElementById("searchValue").value.toLowerCase();
   const typeVal = document.getElementById("filterType").value;
   const dateVal = document.getElementById("searchDate").value;
 
@@ -278,15 +292,11 @@ async function search(){
 
   const filtered = data.filter(d => {
 
-    const matchText =
-      !text ||
-      (d.unique_id || "").toLowerCase().includes(text) ||
-      (d.product_type || "").toLowerCase().includes(text) ||
-      (d.product_number || "").toLowerCase().includes(text) ||
-      (d.model_number || "").toLowerCase().includes(text) ||
-      (d.serial_number || "").toLowerCase().includes(text) ||
-      (d.customer_name || "").toLowerCase().includes(text) ||
-      (d.phone_number || "").toLowerCase().includes(text);
+    let matchField = true;
+
+    if(field && value){
+      matchField = (d[field] || "").toLowerCase().includes(value);
+    }
 
     const matchType =
       !typeVal || d.product_type === typeVal;
@@ -294,7 +304,7 @@ async function search(){
     const matchDate =
       !dateVal || d.date_of_repair === dateVal;
 
-    return matchText && matchType && matchDate;
+    return matchField && matchType && matchDate;
   });
 
   display(filtered);
