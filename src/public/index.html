@@ -7,14 +7,14 @@
 
 <style>
 :root{
-  --bg: #f6f8fc;
+  --bg: #f4f7fb;
   --card: #ffffff;
-  --primary: #4f46e5;
-  --primary-soft: #eef2ff;
-  --accent: #06b6d4;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --border: #e5e7eb;
+  --primary: #6366f1;
+  --secondary: #22c55e;
+  --accent: #0ea5e9;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #e2e8f0;
 }
 
 /* Reset */
@@ -25,97 +25,112 @@
 /* Body */
 body{
   margin:0;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background: radial-gradient(circle at top, #eef2ff, #f8fafc);
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
   color: var(--text);
+}
+
+/* Top Navbar */
+.navbar{
+  background: white;
+  padding: 15px 25px;
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+  position: sticky;
+  top:0;
+  z-index:100;
+}
+
+.navbar h1{
+  font-size:20px;
+  margin:0;
+}
+
+.navbar button{
+  background:#ef4444;
 }
 
 /* Container */
 .container{
-  max-width: 1150px;
+  max-width: 1200px;
   margin:auto;
-  padding: 25px;
+  padding:20px;
 }
 
-/* Card */
+/* Stats Cards */
+.stats{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+  gap:15px;
+  margin-bottom:20px;
+}
+
+.stat-card{
+  background: linear-gradient(135deg, #6366f1, #0ea5e9);
+  color:white;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.1);
+}
+
+.stat-card h3{
+  margin:0;
+  font-size:14px;
+  opacity:0.8;
+}
+
+.stat-card p{
+  font-size:22px;
+  margin:5px 0 0;
+  font-weight:bold;
+}
+
+/* Cards */
 .card{
   background: var(--card);
-  border-radius: 18px;
-  padding: 22px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-  transition: 0.25s ease;
-}
-
-.card:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-}
-
-/* Headings */
-h1{
-  font-size: 26px;
-  margin-bottom: 10px;
-}
-
-h2{
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: var(--muted);
-}
-
-/* Labels */
-label{
-  font-size: 13px;
-  color: var(--muted);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:20px;
+  border:1px solid var(--border);
+  box-shadow:0 6px 18px rgba(0,0,0,0.05);
 }
 
 /* Inputs */
 input, select, textarea{
   width:100%;
-  padding:11px;
+  padding:10px;
   margin-top:6px;
   border-radius:10px;
   border:1px solid var(--border);
   background:#f9fafb;
-  transition:0.2s;
-  font-size:14px;
 }
 
 input:focus, select:focus, textarea:focus{
   outline:none;
   border-color: var(--primary);
-  background:#fff;
-  box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
 }
 
 /* Buttons */
 button{
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: var(--primary);
   color:white;
   border:none;
-  padding:11px;
+  padding:10px;
   border-radius:10px;
   cursor:pointer;
-  font-weight:500;
-  transition:0.25s;
+  transition:0.2s;
 }
 
 button:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 8px 15px rgba(79,70,229,0.25);
+  opacity:0.9;
 }
 
-/* Logout override */
-button[style*="red"]{
-  background: linear-gradient(135deg, #ef4444, #f97316);
-}
-
-/* Row layout */
+/* Grid */
 .row{
   display:grid;
-  gap:14px;
+  gap:12px;
 }
 
 @media(min-width:768px){
@@ -124,40 +139,28 @@ button[style*="red"]{
   }
 }
 
-/* Actions */
-.actions{
-  margin-top:12px;
-  display:flex;
-  gap:10px;
-}
-
 /* Record Card */
 .record-card{
-  background: linear-gradient(145deg, #ffffff, #f1f5f9);
-  padding:16px;
-  border-radius:14px;
-  margin-top:12px;
+  background:#f8fafc;
+  padding:15px;
+  border-radius:12px;
   border:1px solid var(--border);
-  position:relative;
-  transition:0.25s;
-}
-
-.record-card::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:5px;
-  border-radius:14px 0 0 14px;
-  background: linear-gradient(to bottom, var(--primary), var(--accent));
+  margin-top:10px;
+  transition:0.2s;
 }
 
 .record-card:hover{
   transform: translateY(-3px);
 }
 
-/* Dashboard hidden */
+/* Actions */
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+/* Hide dashboard */
 #dashboard{
   display:none;
 }
@@ -180,6 +183,11 @@ button[style*="red"]{
   <input id="pass" type="password">
 
   <button onclick="login()">Login</button>
+</div>
+
+<div class="navbar">
+  <h1>Computers Zone</h1>
+  <button onclick="logout()">Logout</button>
 </div>
 
 <!-- DASHBOARD -->
@@ -287,6 +295,21 @@ button[style*="red"]{
   <div class="card">
     <h2>Results</h2>
     <div id="results"></div>
+  </div>
+
+  <div class="stats">
+  <div class="stat-card">
+    <h3>Total Records</h3>
+    <p id="totalCount">0</p>
+  </div>
+  <div class="stat-card">
+    <h3>Laptops</h3>
+    <p id="laptopCount">0</p>
+  </div>
+  <div class="stat-card">
+    <h3>Printers</h3>
+    <p id="printerCount">0</p>
+  </div>
   </div>
 
 </div>
