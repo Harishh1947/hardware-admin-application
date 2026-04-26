@@ -11,7 +11,7 @@ app.use(express.static("public"));
 // ✅ Supabase
 const supabase = createClient(
   "https://ikfgqjxxwicfoaayuunq.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrZmdxanh4d2ljZm9hYXl1dW5xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MzkxMzksImV4cCI6MjA5MjAxNTEzOX0.7aNY1v2FMRCxxDeEr04-8d3jnVkArFYlJ9TK65W-X40"
+  "YOUR_SUPABASE_KEY"
 );
 
 // ================= ADD =================
@@ -43,7 +43,7 @@ app.post("/add", async (req, res) => {
     return res.status(500).json(updateError);
   }
 
-  // ✅ IMPORTANT: return ARRAY (matches your old UI)
+  // ✅ IMPORTANT: return ARRAY (for your old UI)
   res.json([
     { ...inserted, custom_id: customId }
   ]);
@@ -56,9 +56,10 @@ app.get("/products", async (req, res) => {
     .select("*")
     .order("id", { ascending: false });
 
-  console.log("GET ERROR:", error);
-
-  if (error) return res.status(500).json(error);
+  if (error) {
+    console.log("GET ERROR:", error);
+    return res.status(500).json(error);
+  }
 
   res.json(data);
 });
@@ -77,8 +78,7 @@ app.get("/product/:custom_id", async (req, res) => {
 
 // ================= UPDATE =================
 app.put("/update/:id", async (req, res) => {
-  console.log("UPDATE ID:", req.params.id);
-  console.log("UPDATE BODY:", req.body);
+  console.log("UPDATE:", req.params.id, req.body);
 
   const { data, error } = await supabase
     .from("products")
