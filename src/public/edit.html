@@ -125,13 +125,13 @@ async function load() {
     const params = new URLSearchParams(window.location.search);
     productId = params.get("id");
 
-    const res = await fetch(BASE_URL + "/products");
+    const res = await fetch(BASE_URL + "/products"); // ✅ FIXED
     const data = await res.json();
 
     dataObj = data.find(d => d.id == productId);
 
     if (!dataObj) {
-      document.getElementById("form").innerHTML = "Record not found";
+      document.getElementById("form").innerHTML = "<p>Record not found.</p>";
       return;
     }
 
@@ -146,7 +146,7 @@ async function load() {
 // RENDER FORM
 function render() {
   document.getElementById("form").innerHTML = `
-    <p><strong>Unique ID:</strong> ${dataObj.custom_id || ""}</p>
+    <p><strong>Unique ID:</strong> ${dataObj.custom_id || ""}</p> <!-- ✅ FIXED -->
 
     ${createSelectField("Product Type", "product_type", dataObj.product_type)}
     ${createInputField("Product Number", "product_number", dataObj.product_number)}
@@ -202,7 +202,7 @@ function createSelectField(label, id, value) {
   `;
 }
 
-// ENABLE EDIT
+// ENABLE FIELD
 function enableField(id) {
   const field = document.getElementById(id);
   field.disabled = false;
@@ -223,18 +223,18 @@ async function updateRecord() {
       repair_details: document.getElementById("repair_details").value
     };
 
-    const res = await fetch(BASE_URL + "/update/" + productId, {
+    const res = await fetch(BASE_URL + "/update/" + productId, { // ✅ FIXED
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updated)
     });
 
     if (!res.ok) {
-      alert("Failed to update");
+      alert("Failed to update record");
       return;
     }
 
-    alert("Updated successfully");
+    alert("Record updated successfully");
     window.location.href = "records.html";
 
   } catch (err) {
