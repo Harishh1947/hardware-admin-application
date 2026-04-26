@@ -11,7 +11,7 @@ app.use(express.static("public"));
 // ✅ Supabase
 const supabase = createClient(
   "https://ikfgqjxxwicfoaayuunq.supabase.co",
-  "YOUR_SUPABASE_KEY"
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrZmdxanh4d2ljZm9hYXl1dW5xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MzkxMzksImV4cCI6MjA5MjAxNTEzOX0.7aNY1v2FMRCxxDeEr04-8d3jnVkArFYlJ9TK65W-X40"
 );
 
 // ================= ADD =================
