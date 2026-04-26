@@ -15,19 +15,28 @@ const supabase = createClient(
 
 // ADD
 app.post("/add", async (req, res) => {
-  console.log("ADD BODY:", req.body);
-
+  // Step 1: insert without custom_id
   const { data, error } = await supabase
     .from("products")
     .insert([req.body])
     .select();
 
-  if (error) {
-    console.log("ADD ERROR:", error);
-    return res.status(500).json(error);
-  }
+  if (error) return res.status(500).json(error);
 
-  res.json(data);
+  const inserted = data[0];
+
+  // Step 2: create custom ID
+  const customId = `CZSKLM${inserted.id}`;
+
+  // Step 3: update row with custom_id
+  const { error: updateError } = await supabase
+    .from("products")
+    .update({ custom_id: customId })
+    .eq("id", inserted.id);
+
+  if (updateError) return res.status(500).json(updateError);
+
+  res.json({ ...inserted, custom_id: customId });
 });
 
 // GET ALL
@@ -38,6 +47,17 @@ app.get("/products", async (req, res) => {
     .order("id", { ascending: false });
 
   console.log("GET ERROR:", error);
+
+  if (error) return res.status(500).json(error);
+
+  res.json(data);
+});
+
+app.get("/product/:custom_id", async (req, res) => {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("custom_id", req.params.custom_id);
 
   if (error) return res.status(500).json(error);
 
