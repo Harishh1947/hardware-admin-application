@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>All Records</title>
+
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -60,54 +59,109 @@
     .edit-btn {
       margin-top: 10px;
     }
+
+    .delete-btn {
+      background: red;
+      margin-left: 8px;
+    }
   </style>
 </head>
-<body>
-  <div class="container">
-    <div class="top-actions">
-      <button onclick="window.location.href='index.html'">Back to Dashboard</button>
-    </div>
 
-    <div class="card">
-      <h1>All Records</h1>
-      <div id="results"></div>
-    </div>
+<body>
+
+<div class="container">
+
+  <div class="top-actions">
+    <button onclick="window.location.href='index.html'">
+      Back to Dashboard
+    </button>
   </div>
 
-  <script>
-    async function loadRecords() {
-      const res = await fetch("/products");
-      const data = await res.json();
+  <div class="card">
+    <h1>All Records</h1>
+    <div id="results"></div>
+  </div>
 
-      results.innerHTML = "";
+</div>
 
-      if (!data.length) {
-        results.innerHTML = "<p>No records found.</p>";
-        return;
-      }
+<script>
+const BASE_URL = "https://computers-zone.onrender.com";
 
-      data.forEach((d) => {
-        results.innerHTML += `
-          <div class="card record">
-            <p><strong>Unique ID:</strong> ${d.id || ""}</p>
-            <p><strong>Product Type:</strong> ${d.product_type || ""}</p>
-            <p><strong>Product Number:</strong> ${d.product_number || ""}</p>
-            <p><strong>Model Number:</strong> ${d.model_number || ""}</p>
-            <p><strong>Serial Number:</strong> ${d.serial_number || ""}</p>
-            <p><strong>Date of Repair:</strong> ${d.date_of_repair || ""}</p>
-            <p><strong>Customer Name:</strong> ${d.customer_name || ""}</p>
-            <p><strong>Phone Number:</strong> ${d.phone_number || ""}</p>
-            <button class="edit-btn" onclick="goToEdit(${d.id})">Edit</button>
-          </div>
-        `;
-      });
+// LOAD ALL RECORDS
+async function loadRecords() {
+  try {
+    const results = document.getElementById("results");
+
+    const res = await fetch(BASE_URL + "/products");
+    const data = await res.json();
+
+    results.innerHTML = "";
+
+    if (!data.length) {
+      results.innerHTML = "<p>No records found.</p>";
+      return;
     }
 
-    function goToEdit(id) {
-      window.location.href = `edit.html?id=${id}`;
+    data.forEach((d) => {
+      results.innerHTML += `
+        <div class="card record">
+          <p><strong>Unique ID:</strong> ${d.custom_id || ""}</p>
+          <p><strong>Product Type:</strong> ${d.product_type || ""}</p>
+          <p><strong>Product Number:</strong> ${d.product_number || ""}</p>
+          <p><strong>Model Number:</strong> ${d.model_number || ""}</p>
+          <p><strong>Serial Number:</strong> ${d.serial_number || ""}</p>
+          <p><strong>Date of Repair:</strong> ${d.date_of_repair || ""}</p>
+          <p><strong>Customer Name:</strong> ${d.customer_name || ""}</p>
+          <p><strong>Phone Number:</strong> ${d.phone_number || ""}</p>
+
+          <button class="edit-btn" onclick="goToEdit(${d.id})">
+            Edit
+          </button>
+
+          <button class="delete-btn" onclick="deleteRecord(${d.id})">
+            Delete
+          </button>
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.log("LOAD ERROR:", err);
+    document.getElementById("results").innerHTML = "Error loading records";
+  }
+}
+
+// GO TO EDIT PAGE
+function goToEdit(id) {
+  window.location.href = "edit.html?id=" + id;
+}
+
+// DELETE RECORD
+async function deleteRecord(id) {
+  if (!confirm("Delete this record?")) return;
+
+  try {
+    const res = await fetch(BASE_URL + "/delete/" + id, {
+      method: "DELETE"
+    });
+
+    if (!res.ok) {
+      alert("Delete failed");
+      return;
     }
 
+    alert("Deleted successfully");
     loadRecords();
-  </script>
+
+  } catch (err) {
+    console.log("DELETE ERROR:", err);
+    alert("Error deleting record");
+  }
+}
+
+// INITIAL LOAD
+loadRecords();
+</script>
+
 </body>
 </html>
