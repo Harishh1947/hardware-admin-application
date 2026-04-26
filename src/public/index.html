@@ -152,22 +152,41 @@ async function add(){
 
 // SEARCH
 async function search(){
+
   const field = document.getElementById("searchField").value;
   const value = document.getElementById("searchValue").value.trim().toLowerCase();
+
+  // ✅ NEW (you already had earlier in old UI)
+  const typeVal = document.getElementById("filterType")?.value || "";
+  const dateVal = document.getElementById("searchDate")?.value || "";
 
   const res = await fetch(BASE_URL + "/products");
   const data = await res.json();
 
-  const filtered = data.filter(d=>{
-    const fieldValue = String(d[field] || "").toLowerCase();
+  const filtered = data.filter(d => {
 
-    // ✅ exact match for custom_id
-    if(field === "custom_id"){
-      return fieldValue === value;
+    // 🔹 Field filter
+    let matchField = true;
+
+    if(field && value){
+      const fieldValue = String(d[field] || "").toLowerCase();
+
+      if(field === "custom_id"){
+        matchField = fieldValue === value; // exact
+      } else {
+        matchField = fieldValue.includes(value); // partial
+      }
     }
 
-    // partial match for others
-    return fieldValue.includes(value);
+    // 🔹 Type filter
+    const matchType =
+      !typeVal || typeVal === "" || d.product_type === typeVal;
+
+    // 🔹 Date filter
+    const matchDate =
+      !dateVal || d.date_of_repair === dateVal;
+
+    return matchField && matchType && matchDate;
   });
 
   display(filtered);
