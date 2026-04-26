@@ -10,317 +10,112 @@
   --bg: #f6f8fc;
   --card: #ffffff;
   --primary: #4f46e5;
-  --primary-soft: #eef2ff;
   --accent: #06b6d4;
   --text: #1f2937;
   --muted: #6b7280;
   --border: #e5e7eb;
 }
 
-/* Reset */
-*{
-  box-sizing: border-box;
-}
-
-/* Body */
 body{
   margin:0;
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background: radial-gradient(circle at top, #eef2ff, #f8fafc);
-  color: var(--text);
+  font-family:'Segoe UI',sans-serif;
+  background:#f6f8fc;
 }
 
-/* Container */
 .container{
-  max-width: 1150px;
+  max-width:1100px;
   margin:auto;
-  padding: 25px;
+  padding:20px;
 }
 
-/* Card */
 .card{
-  background: var(--card);
-  border-radius: 18px;
-  padding: 22px;
-  margin-bottom: 20px;
-  border: 1px solid var(--border);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-  transition: 0.25s ease;
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  margin-bottom:15px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.08);
 }
 
-.card:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-}
-
-/* Headings */
-h1{
-  font-size: 26px;
-  margin-bottom: 10px;
-}
-
-h2{
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: var(--muted);
-}
-
-/* Labels */
-label{
-  font-size: 13px;
-  color: var(--muted);
-}
-
-/* Inputs */
-input, select, textarea{
+input,select,textarea{
   width:100%;
-  padding:11px;
+  padding:10px;
   margin-top:6px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  background:#f9fafb;
-  transition:0.2s;
-  font-size:14px;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
 
-input:focus, select:focus, textarea:focus{
-  outline:none;
-  border-color: var(--primary);
-  background:#fff;
-  box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
-}
-
-/* Buttons */
 button{
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color:white;
+  margin-top:10px;
+  padding:10px;
   border:none;
-  padding:11px;
-  border-radius:10px;
+  border-radius:8px;
+  background:#4f46e5;
+  color:white;
   cursor:pointer;
-  font-weight:500;
-  transition:0.25s;
 }
 
 button:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 8px 15px rgba(79,70,229,0.25);
+  opacity:0.9;
 }
 
-/* Logout override */
-button[style*="red"]{
-  background: linear-gradient(135deg, #ef4444, #f97316);
-}
-
-/* Row layout */
-.row{
-  display:grid;
-  gap:14px;
-}
-
-@media(min-width:768px){
-  .row{
-    grid-template-columns:1fr 1fr;
-  }
-}
-
-/* Actions */
-.actions{
-  margin-top:12px;
-  display:flex;
-  gap:10px;
-}
-
-/* Record Card */
 .record-card{
-  background: linear-gradient(145deg, #ffffff, #f1f5f9);
-  padding:16px;
-  border-radius:14px;
-  margin-top:12px;
-  border:1px solid var(--border);
-  position:relative;
-  transition:0.25s;
+  background:#f9fafb;
+  padding:10px;
+  margin-top:10px;
+  border-radius:10px;
 }
-
-.record-card::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:5px;
-  border-radius:14px 0 0 14px;
-  background: linear-gradient(to bottom, var(--primary), var(--accent));
-}
-
-.record-card:hover{
-  transform: translateY(-3px);
-}
-
-/* Dashboard hidden */
-#dashboard{
-  display:none;
-}
-  </style>
-
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-<!-- LOGIN -->
-<div id="loginPage" class="card">
-  <h1>Admin Login</h1>
+<div class="card">
+<h2>Add Product</h2>
 
-  <label>Username</label>
-  <input id="user">
+<select id="type">
+<option value="">Select</option>
+<option>Laptop</option>
+<option>Printer</option>
+<option>Desktop</option>
+</select>
 
-  <label>Password</label>
-  <input id="pass" type="password">
+<input id="pnum" placeholder="Product Number">
+<input id="mnum" placeholder="Model Number">
+<input id="snum" placeholder="Serial Number">
+<input type="date" id="date">
+<input id="cname" placeholder="Customer Name">
+<input id="phone" placeholder="Phone">
+<textarea id="repair" placeholder="Repair Details"></textarea>
 
-  <button onclick="login()">Login</button>
+<button onclick="add()">Add Product</button>
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard">
+<div class="card">
+<h2>Search</h2>
 
-  <div class="card">
-    <h1>Computers Zone Admin Panel</h1>
-    <button onclick="logout()" style="background:red;">Logout</button>
-  </div>
+<select id="searchField">
+<option value="custom_id">Unique ID</option>
+<option value="product_number">Product Number</option>
+<option value="customer_name">Customer Name</option>
+</select>
 
-  <!-- ADD -->
-  <div class="card">
-    <h2>Add Product</h2>
+<input id="searchValue" placeholder="Enter value">
 
-    <div class="row">
-      <div>
-        <label>Product Type</label>
-        <select id="type">
-          <option value="">Select</option>
-          <option>Laptop</option>
-          <option>Printer</option>
-          <option>Desktop</option>
-        </select>
-      </div>
-    
-
-      <div>
-        <label>Product Number</label>
-        <input id="pnum">
-      </div>
-
-      <div>
-        <label>Model Number</label>
-        <input id="mnum">
-      </div>
-
-      <div>
-        <label>Serial Number</label>
-        <input id="snum">
-      </div>
-
-      <div>
-        <label>Date of Repair</label>
-        <input type="date" id="date">
-      </div>
-
-      <div>
-        <label>Customer Name</label>
-        <input id="cname">
-      </div>
-
-      <div>
-        <label>Phone Number</label>
-        <input id="phone">
-      </div>
-
-      <div>
-        <label>Repair Details</label>
-        <textarea id="repair" rows="6" style="width:100%;"></textarea>
-      </div>
-    </div>
-
-    <button onclick="add()">Add Product</button>
-  </div>
-
-  <!-- SEARCH -->
-  <div class="card">
-    <h2>Search</h2>
-
-    <label>Product Type</label>
-    <select id="filterType">
-      <option value="">All</option>
-      <option>Laptop</option>
-      <option>Printer</option>
-      <option>Desktop</option>
-    </select>
-
-    <!-- 🔹 Search By Field -->
-    <label>Search By</label>
-    <select id="searchField">
-      <option value="">Select Field</option>
-      <option value="id">Unique ID</option>
-      <option value="product_number">Product Number</option>
-      <option value="model_number">Model Number</option>
-      <option value="serial_number">Serial Number</option>
-      <option value="customer_name">Customer Name</option>
-      <option value="phone_number">Phone Number</option>
-    </select>
-
-    <!-- 🔹 Input -->
-    <label>Enter Value</label>
-    <input id="searchValue" placeholder="Enter value">
-
-    <label>Date</label>
-    <input type="date" id="searchDate">
-
-    <button onclick="search()">Search</button>
-
-    <button onclick="window.location.href='records.html'">
-      View All Records
-    </button>
-  </div>
-
-  <!-- RESULTS -->
-  <div class="card">
-    <h2>Results</h2>
-    <div id="results"></div>
-  </div>
-
+<button onclick="search()">Search</button>
+<button onclick="window.location.href='records.html'">View All</button>
 </div>
+
+<div class="card">
+<h2>Results</h2>
+<div id="results"></div>
+</div>
+
 </div>
 
 <script>
-
-// LOGIN
-function login(){
-  var u = document.getElementById("user").value;
-  var p = document.getElementById("pass").value;
-
-  if(u === "admin" && p === "1234"){
-    localStorage.setItem("isLoggedIn","true");
-
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
-  } else {
-    alert("Invalid login");
-  }
-}
-
-window.onload = function(){
-  if(localStorage.getItem("isLoggedIn") === "true"){
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
-  }
-};
-
-// LOGOUT
-function logout(){
-  localStorage.removeItem("isLoggedIn");
-  location.reload();
-}
+const BASE_URL = "https://computers-zone.onrender.com";
 
 // ADD
 async function add(){
@@ -335,23 +130,22 @@ async function add(){
     repair_details: repair.value
   };
 
-  const res = await fetch("/add", {
+  const res = await fetch(BASE_URL + "/add",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify(product)
   });
 
-  const data = await res.json();
+  const result = await res.json();
 
   if(!res.ok){
     alert("Failed");
     return;
   }
 
-  // 👇 SHOW GENERATED ID
-  alert("Added Successfully!\nUnique ID: " + data[0].id);
+  alert("Added Successfully!\nID: " + result.data.custom_id);
 
-  // clear fields
+  // clear
   type.value="";
   pnum.value="";
   mnum.value="";
@@ -365,47 +159,19 @@ async function add(){
 // SEARCH
 async function search(){
   const field = document.getElementById("searchField").value;
-  const value = document.getElementById("searchValue").value.trim().toLowerCase();
-  const typeVal = document.getElementById("filterType").value;
-  const dateVal = document.getElementById("searchDate").value;
+  const value = document.getElementById("searchValue").value.toLowerCase();
 
-  const res = await fetch("/products");
+  const res = await fetch(BASE_URL + "/products");
   const data = await res.json();
 
-  const filtered = data.filter(d => {
+  const filtered = data.filter(d=>{
+    const val = String(d[field] || "").toLowerCase();
 
-    let matchField = true;
-
-    if(field && value){
-
-      const fieldValue = String(d[field] || "").trim().toLowerCase();
-
-      // ✅ Exact match (cleaned)
-      if(
-        field === "id" ||
-        field === "product_number" ||
-        field === "model_number" ||
-        field === "serial_number"
-      ){
-        matchField = fieldValue === value;
-      }
-
-      // ✅ Partial match (only for name & phone)
-      else if(
-        field === "customer_name" ||
-        field === "phone_number"
-      ){
-        matchField = fieldValue.includes(value);
-      }
+    if(field === "custom_id"){
+      return val === value;
+    } else {
+      return val.includes(value);
     }
-
-    const matchType =
-      !typeVal || d.product_type === typeVal;
-
-    const matchDate =
-      !dateVal || d.date_of_repair === dateVal;
-
-    return matchField && matchType && matchDate;
   });
 
   display(filtered);
@@ -425,42 +191,13 @@ function display(data){
     results.innerHTML += `
       <div class="record-card">
         <p><b>${d.product_type}</b></p>
-        <p><strong>Unique ID:</strong> ${d.id || ""}</p>
-        Product: ${d.product_number}<br>
-        Model: ${d.model_number}<br>
-        Serial: ${d.serial_number}<br>
-        Date: ${d.date_of_repair}<br>
-        Customer: ${d.customer_name}<br>
-        Phone: ${d.phone_number}<br>
-        <p><strong>Repair Details:</strong> ${d.repair_details || ""}</p>
-
-        <div class="actions">
-          <button onclick="goToEdit(${d.id})">Edit</button>
-          <button onclick="deleteRecord(${d.id})" style="background:red;">Delete</button>
-        </div>
+        <p><strong>ID:</strong> ${d.custom_id}</p>
+        <p>${d.product_number}</p>
+        <p>${d.customer_name}</p>
       </div>
     `;
   });
 }
-  
-
-// EDIT
-function goToEdit(id){
-  window.location.href="edit.html?id="+id;
-}
-
-// DELETE
-async function deleteRecord(id){
-  if(!confirm("Delete this record?")) return;
-
-  await fetch("/delete/"+id,{
-    method:"DELETE"
-  });
-
-  alert("Deleted");
-  search();
-}
-
 </script>
 
 </body>
