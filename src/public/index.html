@@ -10,59 +10,49 @@
   --bg: #f6f8fc;
   --card: #ffffff;
   --primary: #4f46e5;
+  --primary-soft: #eef2ff;
   --accent: #06b6d4;
   --text: #1f2937;
   --muted: #6b7280;
   --border: #e5e7eb;
 }
-
+*{box-sizing:border-box;}
 body{
   margin:0;
-  font-family:'Segoe UI',sans-serif;
-  background:#f6f8fc;
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background: radial-gradient(circle at top, #eef2ff, #f8fafc);
 }
-
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:20px;
-}
-
+.container{max-width:1150px;margin:auto;padding:25px;}
 .card{
-  background:white;
-  padding:20px;
-  border-radius:14px;
-  margin-bottom:15px;
-  box-shadow:0 4px 14px rgba(0,0,0,0.08);
+  background:var(--card);
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:20px;
+  border:1px solid var(--border);
+  box-shadow:0 10px 25px rgba(0,0,0,0.06);
 }
-
+h1{font-size:26px;}
+h2{font-size:20px;color:var(--muted);}
 input,select,textarea{
   width:100%;
-  padding:10px;
+  padding:11px;
   margin-top:6px;
-  border-radius:8px;
-  border:1px solid #ccc;
+  border-radius:10px;
+  border:1px solid var(--border);
 }
-
 button{
-  margin-top:10px;
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  background:#4f46e5;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
   color:white;
+  border:none;
+  padding:11px;
+  border-radius:10px;
   cursor:pointer;
 }
-
-button:hover{
-  opacity:0.9;
-}
-
 .record-card{
   background:#f9fafb;
-  padding:10px;
+  padding:12px;
+  border-radius:12px;
   margin-top:10px;
-  border-radius:10px;
 }
 </style>
 </head>
@@ -72,7 +62,7 @@ button:hover{
 <div class="container">
 
 <div class="card">
-<h2>Add Product</h2>
+<h1>Add Product</h1>
 
 <select id="type">
 <option value="">Select</option>
@@ -86,8 +76,8 @@ button:hover{
 <input id="snum" placeholder="Serial Number">
 <input type="date" id="date">
 <input id="cname" placeholder="Customer Name">
-<input id="phone" placeholder="Phone">
-<textarea id="repair" placeholder="Repair Details"></textarea>
+<input id="phone" placeholder="Phone Number">
+<textarea id="repair"></textarea>
 
 <button onclick="add()">Add Product</button>
 </div>
@@ -96,15 +86,18 @@ button:hover{
 <h2>Search</h2>
 
 <select id="searchField">
-<option value="custom_id">Unique ID</option>
+<option value="custom_id">Unique ID</option> <!-- ✅ FIXED -->
 <option value="product_number">Product Number</option>
+<option value="model_number">Model Number</option>
+<option value="serial_number">Serial Number</option>
 <option value="customer_name">Customer Name</option>
+<option value="phone_number">Phone Number</option>
 </select>
 
 <input id="searchValue" placeholder="Enter value">
 
 <button onclick="search()">Search</button>
-<button onclick="window.location.href='records.html'">View All</button>
+<button onclick="window.location.href='records.html'">View All Records</button>
 </div>
 
 <div class="card">
@@ -136,16 +129,17 @@ async function add(){
     body:JSON.stringify(product)
   });
 
-  const result = await res.json();
+  const data = await res.json();
 
   if(!res.ok){
     alert("Failed");
     return;
   }
 
-  alert("Added Successfully!\nID: " + result.data.custom_id);
+  // ✅ FIXED (custom_id instead of id)
+  alert("Added Successfully!\nUnique ID: " + data[0].custom_id);
 
-  // clear
+  // clear fields
   type.value="";
   pnum.value="";
   mnum.value="";
@@ -159,19 +153,21 @@ async function add(){
 // SEARCH
 async function search(){
   const field = document.getElementById("searchField").value;
-  const value = document.getElementById("searchValue").value.toLowerCase();
+  const value = document.getElementById("searchValue").value.trim().toLowerCase();
 
   const res = await fetch(BASE_URL + "/products");
   const data = await res.json();
 
   const filtered = data.filter(d=>{
-    const val = String(d[field] || "").toLowerCase();
+    const fieldValue = String(d[field] || "").toLowerCase();
 
+    // ✅ exact match for custom_id
     if(field === "custom_id"){
-      return val === value;
-    } else {
-      return val.includes(value);
+      return fieldValue === value;
     }
+
+    // partial match for others
+    return fieldValue.includes(value);
   });
 
   display(filtered);
@@ -180,20 +176,20 @@ async function search(){
 // DISPLAY
 function display(data){
   const results = document.getElementById("results");
-  results.innerHTML = "";
+  results.innerHTML="";
 
   if(!data.length){
-    results.innerHTML = "No data found";
+    results.innerHTML="No data found";
     return;
   }
 
   data.forEach(d=>{
-    results.innerHTML += `
+    results.innerHTML+=`
       <div class="record-card">
         <p><b>${d.product_type}</b></p>
-        <p><strong>ID:</strong> ${d.custom_id}</p>
-        <p>${d.product_number}</p>
-        <p>${d.customer_name}</p>
+        <p><strong>Unique ID:</strong> ${d.custom_id}</p> <!-- ✅ FIXED -->
+        <p>Product: ${d.product_number}</p>
+        <p>Customer: ${d.customer_name}</p>
       </div>
     `;
   });
