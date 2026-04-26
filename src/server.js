@@ -4,104 +4,138 @@ const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"]
+}));
+
 app.use(express.json());
 app.use(express.static("public"));
 
+// ✅ Supabase connection
 const supabase = createClient(
   "https://ikfgqjxxwicfoaayuunq.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrZmdxanh4d2ljZm9hYXl1dW5xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0MzkxMzksImV4cCI6MjA5MjAxNTEzOX0.7aNY1v2FMRCxxDeEr04-8d3jnVkArFYlJ9TK65W-X40"
+  "YOUR_SUPABASE_KEY"
 );
 
-// ADD
+// ================= ADD =================
 app.post("/add", async (req, res) => {
-  // Step 1: insert without custom_id
-  const { data, error } = await supabase
-    .from("products")
-    .insert([req.body])
-    .select();
+  try {
+    console.log("🔥 ADD API HIT");
+    console.log("BODY:", req.body);
 
-  if (error) return res.status(500).json(error);
+    // Step 1: insert
+    const { data, error } = await supabase
+      .from("products")
+      .insert([req.body])
+      .select();
 
-  const inserted = data[0];
+    if (error) {
+      console.log("ADD ERROR:", error);
+      return res.status(500).json(error);
+    }
 
-  // Step 2: create custom ID
-  const customId = `CZSKLM${inserted.id}`;
+    if (!data || data.length === 0) {
+      return res.status(500).json({ error: "Insert failed" });
+    }
 
-  // Step 3: update row with custom_id
-  const { error: updateError } = await supabase
-    .from("products")
-    .update({ custom_id: customId })
-    .eq("id", inserted.id);
+    const inserted = data[0];
 
-  if (updateError) return res.status(500).json(updateError);
+    // Step 2: generate custom ID
+    const customId = `CZSKLM${inserted.id}`;
 
-  res.json({ ...inserted, custom_id: customId });
-});
+    // Step 3: update custom_id
+    const { error: updateError } = await supabase
+      .from("products")
+      .update({ custom_id: customId })
+      .eq("id", inserted.id);
 
-// GET ALL
-app.get("/products", async (req, res) => {
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .order("id", { ascending: false });
+    if (updateError) {
+      console.log("UPDATE ERROR:", updateError);
+      return res.status(500).json(updateError);
+    }
 
-  console.log("GET ERROR:", error);
+    res.json({ ...inserted, custom_id: customId });
 
-  if (error) return res.status(500).json(error);
-
-  res.json(data);
-});
-
-app.get("/product/:custom_id", async (req, res) => {
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("custom_id", req.params.custom_id);
-
-  if (error) return res.status(500).json(error);
-
-  res.json(data);
-});
-
-// UPDATE
-app.put("/update/:id", async (req, res) => {
-  console.log("UPDATE ID:", req.params.id);
-  console.log("UPDATE BODY:", req.body);
-
-  const { data, error } = await supabase
-    .from("products")
-    .update(req.body)
-    .eq("id", req.params.id)
-    .select();
-
-  if (error) {
-    console.log("UPDATE ERROR:", error);
-    return res.status(500).json(error);
+  } catch (err) {
+    console.log("SERVER ERROR:", err);
+    res.status(500).json({ error: "Server crashed" });
   }
-
-  res.json(data);
 });
+
+// ================= GET ALL =================
+app.get("/products", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("id", { ascending: false });
+
+    console.log("GET ERROR:", error);
+
+    if (error) return res.status(500).json(error);
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ================= GET BY CUSTOM ID =================
+app.get("/product/:custom_id", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("custom_id", req.params.custom_id);
+
+    if (error) return res.status(500).json(error);
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ================= UPDATE =================
+app.put("/update/:id", async (req, res) => {
+  try {
+    console.log("UPDATE ID:", req.params.id);
+    console.log("UPDATE BODY:", req.body);
+
+    const { data, error } = await supabase
+      .from("products")
+      .update(req.body)
+      .eq("id", req.params.id)
+      .select();
+
+    if (error) {
+      console.log("UPDATE ERROR:", error);
+      return res.status(500).json(error);
+    }
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ================= DELETE =================
 app.delete("/delete/:id", async (req, res) => {
-  const { error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", req.params.id);
+  try {
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", req.params.id);
 
-  if (error) return res.status(500).send(error);
+    if (error) return res.status(500).json(error);
 
-  res.send({ message: "Deleted" });
+    res.json({ message: "Deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-app.listen(3000, () => console.log("Server running"));
-// DELETE PRODUCT
-app.delete("/delete/:id", async (req, res) => {
-  const { data, error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", req.params.id);
-
-  if (error) return res.status(500).send(error);
-
-  res.send({ message: "Deleted successfully" });
-});
+// ================= START SERVER =================
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on ${PORT}`));
