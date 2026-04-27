@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Edit Product</title>
-
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -54,7 +55,7 @@
       font-size: 18px;
     }
 
-    input, select, textarea {
+    input, select {
       width: 100%;
       padding: 12px;
       border-radius: 8px;
@@ -92,160 +93,134 @@
     }
   </style>
 </head>
-
 <body>
+  <div class="container">
+    <div class="top-actions">
+      <button class="back-btn" onclick="window.location.href='records.html'">Back to Records</button>
+    </div>
 
-<div class="container">
-
-  <div class="top-actions">
-    <button class="back-btn" onclick="window.location.href='records.html'">
-      Back to Records
-    </button>
+    <div class="card">
+      <h1>Edit Product</h1>
+      <div id="form"></div>
+      <button onclick="updateRecord()">Commit Changes</button>
+    </div>
   </div>
 
-  <div class="card">
-    <h1>Edit Product</h1>
+  <script>
+    let productId;
+    let dataObj = {};
 
-    <div id="form"></div>
+    async function load() {
+      const params = new URLSearchParams(window.location.search);
+      productId = params.get("id");
 
-    <button onclick="updateRecord()">Commit Changes</button>
-  </div>
+      const res = await fetch("/products");
+      const data = await res.json();
+      dataObj = data.find((d) => d.id == productId);
 
-</div>
+      if (!dataObj) {
+        document.getElementById("form").innerHTML = "<p>Record not found.</p>";
+        return;
+      }
 
-<script>
-const BASE_URL = "https://computers-zone.onrender.com";
-
-let productId;
-let dataObj = {};
-
-// LOAD DATA
-async function load() {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    productId = params.get("id");
-
-    const res = await fetch(BASE_URL + "/products"); // ✅ FIXED
-    const data = await res.json();
-
-    dataObj = data.find(d => d.id == productId);
-
-    if (!dataObj) {
-      document.getElementById("form").innerHTML = "<p>Record not found.</p>";
-      return;
+      render();
     }
 
-    render();
+    function render() {
+      document.getElementById("form").innerHTML = `
+        ${createSelectField("Product Type", "product_type", dataObj.product_type)}
+        ${createInputField("Product Number", "product_number", dataObj.product_number, "text")}
+        ${createInputField("Model Number", "model_number", dataObj.model_number, "text")}
+        ${createInputField("Serial Number", "serial_number", dataObj.serial_number, "text")}
+        ${createInputField("Date of Repair", "date_of_repair", dataObj.date_of_repair, "date")}
+        ${createInputField("Customer Name", "customer_name", dataObj.customer_name, "text")}
+        ${createInputField("Phone Number", "phone_number", dataObj.phone_number, "text")}
+        ${createInputField("Repair Details", "repair_details", dataObj.repair_details, "textarea")}
+      `;
+    }
 
-  } catch (err) {
-    console.log("LOAD ERROR:", err);
-    document.getElementById("form").innerHTML = "Error loading record";
-  }
-}
+    function createInputField(label, id, value, type="text") {
 
-// RENDER FORM
-function render() {
-  document.getElementById("form").innerHTML = `
-    <p><strong>Unique ID:</strong> ${dataObj.custom_id || ""}</p> <!-- ✅ FIXED -->
-
-    ${createSelectField("Product Type", "product_type", dataObj.product_type)}
-    ${createInputField("Product Number", "product_number", dataObj.product_number)}
-    ${createInputField("Model Number", "model_number", dataObj.model_number)}
-    ${createInputField("Serial Number", "serial_number", dataObj.serial_number)}
-    ${createInputField("Date of Repair", "date_of_repair", dataObj.date_of_repair, "date")}
-    ${createInputField("Customer Name", "customer_name", dataObj.customer_name)}
-    ${createInputField("Phone Number", "phone_number", dataObj.phone_number)}
-    ${createInputField("Repair Details", "repair_details", dataObj.repair_details, "textarea")}
-  `;
-}
-
-// INPUT FIELD
-function createInputField(label, id, value, type="text") {
-
-  if(type === "textarea"){
-    return `
-      <div class="field">
-        <div class="field-header">
-          <label>${label}</label>
-          <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
+      if(type === "textarea"){
+        return `
+          <div class="field">
+            <div class="field-header">
+              <label>${label}</label>
+              <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
+          </div>
+          <textarea id="${id}" disabled style="
+            width:100%;
+            min-height:180px;
+            padding:12px;
+            border-radius:8px;
+            border:1px solid #ccc;
+            resize: vertical;
+          ">${value || ""}</textarea>
         </div>
-        <textarea id="${id}" disabled>${value || ""}</textarea>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="field">
-      <div class="field-header">
-        <label>${label}</label>
-        <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
-      </div>
-      <input id="${id}" type="${type}" value="${value || ""}" disabled />
-    </div>
-  `;
-}
-
-// SELECT FIELD
-function createSelectField(label, id, value) {
-  return `
-    <div class="field">
-      <div class="field-header">
-        <label>${label}</label>
-        <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
-      </div>
-      <select id="${id}" disabled>
-        <option value="Laptop" ${value==="Laptop"?"selected":""}>Laptop</option>
-        <option value="Printer" ${value==="Printer"?"selected":""}>Printer</option>
-        <option value="Desktop" ${value==="Desktop"?"selected":""}>Desktop</option>
-      </select>
-    </div>
-  `;
-}
-
-// ENABLE FIELD
-function enableField(id) {
-  const field = document.getElementById(id);
-  field.disabled = false;
-  field.focus();
-}
-
-// UPDATE
-async function updateRecord() {
-  try {
-    const updated = {
-      product_type: document.getElementById("product_type").value,
-      product_number: document.getElementById("product_number").value,
-      model_number: document.getElementById("model_number").value,
-      serial_number: document.getElementById("serial_number").value,
-      date_of_repair: document.getElementById("date_of_repair").value,
-      customer_name: document.getElementById("customer_name").value,
-      phone_number: document.getElementById("phone_number").value,
-      repair_details: document.getElementById("repair_details").value
-    };
-
-    const res = await fetch(BASE_URL + "/update/" + productId, { // ✅ FIXED
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updated)
-    });
-
-    if (!res.ok) {
-      alert("Failed to update record");
-      return;
+      `;
     }
 
-    alert("Record updated successfully");
-    window.location.href = "records.html";
+      return `
+        <div class="field">
+          <div class="field-header">
+            <label>${label}</label>
+            <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
+          </div>
+          <input id="${id}" type="${type}" value="${value || ""}" disabled />
+        </div>
+      `;
+    }
 
-  } catch (err) {
-    console.log("UPDATE ERROR:", err);
-    alert("Error updating record");
-  }
-}
+    function createSelectField(label, id, value) {
+      return `
+        <div class="field">
+          <div class="field-header">
+            <label for="${id}">${label}</label>
+            <span class="edit-icon" onclick="enableField('${id}')">✏️</span>
+          </div>
+          <select id="${id}" disabled>
+            <option value="Laptop" ${value === "Laptop" ? "selected" : ""}>Laptop</option>
+            <option value="Printer" ${value === "Printer" ? "selected" : ""}>Printer</option>
+            <option value="Desktop" ${value === "Desktop" ? "selected" : ""}>Desktop</option>
+          </select>
+        </div>
+      `;
+    }
 
-// INIT
-load();
-</script>
+    function enableField(id) {
+      const field = document.getElementById(id);
+      field.disabled = false;
+      field.focus();
+    }
 
+    async function updateRecord() {
+      const updated = {
+        product_type: document.getElementById("product_type").value,
+        product_number: document.getElementById("product_number").value,
+        model_number: document.getElementById("model_number").value,
+        serial_number: document.getElementById("serial_number").value,
+        date_of_repair: document.getElementById("date_of_repair").value,
+        customer_name: document.getElementById("customer_name").value,
+        phone_number: document.getElementById("phone_number").value,
+        repair_details: document.getElementById("repair_details").value
+      };
+
+      const res = await fetch("/update/" + productId, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated)
+      });
+
+      if (!res.ok) {
+        alert("Failed to update record");
+        return;
+      }
+
+      alert("Record updated successfully");
+      window.location.href = "records.html";
+    }
+
+    load();
+  </script>
 </body>
 </html>
