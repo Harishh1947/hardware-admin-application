@@ -6,109 +6,236 @@
 <title>Hardware Admin Panel</title>
 
 <style>
-:root{
-  --bg: #f6f8fc;
-  --card: #ffffff;
-  --primary: #4f46e5;
-  --primary-soft: #eef2ff;
-  --accent: #06b6d4;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --border: #e5e7eb;
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #eef3f8;
 }
-*{box-sizing:border-box;}
-body{
-  margin:0;
-  font-family:'Segoe UI',system-ui,sans-serif;
-  background: radial-gradient(circle at top, #eef2ff, #f8fafc);
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
 }
-.container{max-width:1150px;margin:auto;padding:25px;}
-.card{
-  background:var(--card);
-  border-radius:18px;
-  padding:22px;
-  margin-bottom:20px;
-  border:1px solid var(--border);
-  box-shadow:0 10px 25px rgba(0,0,0,0.06);
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
-h1{font-size:26px;}
-h2{font-size:20px;color:var(--muted);}
-input,select,textarea{
-  width:100%;
-  padding:11px;
-  margin-top:6px;
-  border-radius:10px;
-  border:1px solid var(--border);
+
+h1, h2 {
+  color: #1e3a5f;
+  margin-top: 0;
 }
-button{
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:white;
-  border:none;
-  padding:11px;
-  border-radius:10px;
-  cursor:pointer;
+
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
-.record-card{
-  background:#f9fafb;
-  padding:12px;
-  border-radius:12px;
-  margin-top:10px;
+
+button {
+  background: #1e3a5f;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #274b79;
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.record-card {
+  background: #fff;
+  padding: 12px;
+  border-left: 5px solid #1e3a5f;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+#dashboard { display: none; }
+
+.row {
+  display: grid;
+  gap: 10px;
+}
+
+@media(min-width: 768px){
+  .row { grid-template-columns: 1fr 1fr; }
 }
 </style>
+
 </head>
 
 <body>
 
 <div class="container">
 
-<div class="card">
-<h1>Add Product</h1>
+<!-- LOGIN -->
+<div id="loginPage" class="card">
+  <h1>Admin Login</h1>
 
-<select id="type">
-<option value="">Select</option>
-<option>Laptop</option>
-<option>Printer</option>
-<option>Desktop</option>
-</select>
+  <label>Username</label>
+  <input id="user">
 
-<input id="pnum" placeholder="Product Number">
-<input id="mnum" placeholder="Model Number">
-<input id="snum" placeholder="Serial Number">
-<input type="date" id="date">
-<input id="cname" placeholder="Customer Name">
-<input id="phone" placeholder="Phone Number">
-<textarea id="repair"></textarea>
+  <label>Password</label>
+  <input id="pass" type="password">
 
-<button onclick="add()">Add Product</button>
+  <button onclick="login()">Login</button>
 </div>
 
-<div class="card">
-<h2>Search</h2>
+<!-- DASHBOARD -->
+<div id="dashboard">
 
-<select id="searchField">
-<option value="custom_id">Unique ID</option> <!-- ✅ FIXED -->
-<option value="product_number">Product Number</option>
-<option value="model_number">Model Number</option>
-<option value="serial_number">Serial Number</option>
-<option value="customer_name">Customer Name</option>
-<option value="phone_number">Phone Number</option>
-</select>
+  <div class="card">
+    <h1>Computers Zone Admin Panel</h1>
+    <button onclick="logout()" style="background:red;">Logout</button>
+  </div>
 
-<input id="searchValue" placeholder="Enter value">
+  <!-- ADD -->
+  <div class="card">
+    <h2>Add Product</h2>
 
-<button onclick="search()">Search</button>
-<button onclick="window.location.href='records.html'">View All Records</button>
+    <div class="row">
+      <div>
+        <label>Product Type</label>
+        <select id="type">
+          <option value="">Select</option>
+          <option>Laptop</option>
+          <option>Printer</option>
+          <option>Desktop</option>
+        </select>
+      </div>
+    
+
+      <div>
+        <label>Product Number</label>
+        <input id="pnum">
+      </div>
+
+      <div>
+        <label>Model Number</label>
+        <input id="mnum">
+      </div>
+
+      <div>
+        <label>Serial Number</label>
+        <input id="snum">
+      </div>
+
+      <div>
+        <label>Date of Repair</label>
+        <input type="date" id="date">
+      </div>
+
+      <div>
+        <label>Customer Name</label>
+        <input id="cname">
+      </div>
+
+      <div>
+        <label>Phone Number</label>
+        <input id="phone">
+      </div>
+
+      <div>
+        <label>Repair Details</label>
+        <textarea id="repair" rows="6" style="width:100%;"></textarea>
+      </div>
+    </div>
+
+    <button onclick="add()">Add Product</button>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="card">
+    <h2>Search</h2>
+
+    <label>Product Type</label>
+    <select id="filterType">
+      <option value="">All</option>
+      <option>Laptop</option>
+      <option>Printer</option>
+      <option>Desktop</option>
+    </select>
+
+    <!-- 🔹 Search By Field -->
+    <label>Search By</label>
+    <select id="searchField">
+      <option value="">Select Field</option>
+      <option value="id">Unique ID</option>
+      <option value="product_number">Product Number</option>
+      <option value="model_number">Model Number</option>
+      <option value="serial_number">Serial Number</option>
+      <option value="customer_name">Customer Name</option>
+      <option value="phone_number">Phone Number</option>
+    </select>
+
+    <!-- 🔹 Input -->
+    <label>Enter Value</label>
+    <input id="searchValue" placeholder="Enter value">
+
+    <label>Date</label>
+    <input type="date" id="searchDate">
+
+    <button onclick="search()">Search</button>
+
+    <button onclick="window.location.href='records.html'">
+      View All Records
+    </button>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="card">
+    <h2>Results</h2>
+    <div id="results"></div>
+  </div>
+
 </div>
-
-<div class="card">
-<h2>Results</h2>
-<div id="results"></div>
-</div>
-
 </div>
 
 <script>
-const BASE_URL = "https://computers-zone.onrender.com";
+
+// LOGIN
+function login(){
+  var u = document.getElementById("user").value;
+  var p = document.getElementById("pass").value;
+
+  if(u === "admin" && p === "1234"){
+    localStorage.setItem("isLoggedIn","true");
+
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+  } else {
+    alert("Invalid login");
+  }
+}
+
+window.onload = function(){
+  if(localStorage.getItem("isLoggedIn") === "true"){
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+  }
+};
+
+// LOGOUT
+function logout(){
+  localStorage.removeItem("isLoggedIn");
+  location.reload();
+}
 
 // ADD
 async function add(){
@@ -123,7 +250,7 @@ async function add(){
     repair_details: repair.value
   };
 
-  const res = await fetch(BASE_URL + "/add",{
+  const res = await fetch("/add", {
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify(product)
@@ -136,8 +263,8 @@ async function add(){
     return;
   }
 
-  // ✅ FIXED (custom_id instead of id)
-  alert("Added Successfully!\nUnique ID: " + data[0].custom_id);
+  // 👇 SHOW GENERATED ID
+  alert("Added Successfully!\nUnique ID: " + data[0].id);
 
   // clear fields
   type.value="";
@@ -152,37 +279,44 @@ async function add(){
 
 // SEARCH
 async function search(){
-
   const field = document.getElementById("searchField").value;
   const value = document.getElementById("searchValue").value.trim().toLowerCase();
+  const typeVal = document.getElementById("filterType").value;
+  const dateVal = document.getElementById("searchDate").value;
 
-  // ✅ NEW (you already had earlier in old UI)
-  const typeVal = document.getElementById("filterType")?.value || "";
-  const dateVal = document.getElementById("searchDate")?.value || "";
-
-  const res = await fetch(BASE_URL + "/products");
+  const res = await fetch("/products");
   const data = await res.json();
 
   const filtered = data.filter(d => {
 
-    // 🔹 Field filter
     let matchField = true;
 
     if(field && value){
-      const fieldValue = String(d[field] || "").toLowerCase();
 
-      if(field === "custom_id"){
-        matchField = fieldValue === value; // exact
-      } else {
-        matchField = fieldValue.includes(value); // partial
+      const fieldValue = String(d[field] || "").trim().toLowerCase();
+
+      // ✅ Exact match (cleaned)
+      if(
+        field === "id" ||
+        field === "product_number" ||
+        field === "model_number" ||
+        field === "serial_number"
+      ){
+        matchField = fieldValue === value;
+      }
+
+      // ✅ Partial match (only for name & phone)
+      else if(
+        field === "customer_name" ||
+        field === "phone_number"
+      ){
+        matchField = fieldValue.includes(value);
       }
     }
 
-    // 🔹 Type filter
     const matchType =
-      !typeVal || typeVal === "" || d.product_type === typeVal;
+      !typeVal || d.product_type === typeVal;
 
-    // 🔹 Date filter
     const matchDate =
       !dateVal || d.date_of_repair === dateVal;
 
@@ -195,24 +329,53 @@ async function search(){
 // DISPLAY
 function display(data){
   const results = document.getElementById("results");
-  results.innerHTML="";
+  results.innerHTML = "";
 
   if(!data.length){
-    results.innerHTML="No data found";
+    results.innerHTML = "No data found";
     return;
   }
 
   data.forEach(d=>{
-    results.innerHTML+=`
+    results.innerHTML += `
       <div class="record-card">
         <p><b>${d.product_type}</b></p>
-        <p><strong>Unique ID:</strong> ${d.custom_id}</p> <!-- ✅ FIXED -->
-        <p>Product: ${d.product_number}</p>
-        <p>Customer: ${d.customer_name}</p>
+        <p><strong>Unique ID:</strong> ${d.id || ""}</p>
+        Product: ${d.product_number}<br>
+        Model: ${d.model_number}<br>
+        Serial: ${d.serial_number}<br>
+        Date: ${d.date_of_repair}<br>
+        Customer: ${d.customer_name}<br>
+        Phone: ${d.phone_number}<br>
+        <p><strong>Repair Details:</strong> ${d.repair_details || ""}</p>
+
+        <div class="actions">
+          <button onclick="goToEdit(${d.id})">Edit</button>
+          <button onclick="deleteRecord(${d.id})" style="background:red;">Delete</button>
+        </div>
       </div>
     `;
   });
 }
+  
+
+// EDIT
+function goToEdit(id){
+  window.location.href="edit.html?id="+id;
+}
+
+// DELETE
+async function deleteRecord(id){
+  if(!confirm("Delete this record?")) return;
+
+  await fetch("/delete/"+id,{
+    method:"DELETE"
+  });
+
+  alert("Deleted");
+  search();
+}
+
 </script>
 
 </body>
