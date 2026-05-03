@@ -289,6 +289,7 @@ async function add(){
 
 // SEARCH
 async function search(){
+  const brandVal = document.getElementById("filterBrand").value.toLowerCase();
   const field = document.getElementById("searchField").value;
   const value = document.getElementById("searchValue").value.trim().toLowerCase();
   const typeVal = document.getElementById("filterType").value;
@@ -326,11 +327,14 @@ async function search(){
 
     const matchType =
       !typeVal || d.product_type === typeVal;
+    
+    const matchBrand =
+      !brandVal || String(d.brand || "").toLowerCase().includes(brandVal);
 
     const matchDate =
       !dateVal || d.date_of_repair === dateVal;
 
-    return matchField && matchType && matchDate;
+    return matchField && matchType && matchDate && matchBrand;
   });
 
   display(filtered);
