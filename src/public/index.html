@@ -177,6 +177,9 @@ button:hover {
       <option>Desktop</option>
     </select>
 
+    <label>Brand</label>
+    <input id="filterBrand" placeholder="Enter brand">
+
     <!-- 🔹 Search By Field -->
     <label>Search By</label>
     <select id="searchField">
@@ -245,6 +248,7 @@ function logout(){
 // ADD
 async function add(){
   const product = {
+    brand: brand.value,
     product_type: type.value,
     product_number: pnum.value,
     model_number: mnum.value,
@@ -273,6 +277,7 @@ async function add(){
 
   // clear fields
   type.value="";
+  brand.value = "";
   pnum.value="";
   mnum.value="";
   snum.value="";
@@ -344,6 +349,7 @@ function display(data){
   data.forEach(d=>{
     results.innerHTML += `
       <div class="record-card">
+        <p><strong>Brand:</strong> ${d.brand || ""}</p>
         <p><b>${d.product_type}</b></p>
         <p><strong>Unique ID:</strong> ${d.id || ""}</p>
         Product: ${d.product_number}<br>
