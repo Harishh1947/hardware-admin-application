@@ -185,6 +185,7 @@ button:hover {
     <select id="searchField">
       <option value="">Select Field</option>
       <option value="id">Unique ID</option>
+      <option value="brand">Brand</option>
       <option value="product_number">Product Number</option>
       <option value="model_number">Model Number</option>
       <option value="serial_number">Serial Number</option>
@@ -316,6 +317,10 @@ async function search(){
         matchField = fieldValue === value;
       }
 
+      else if(field === "brand"){
+        matchField = fieldValue.includes(value);
+      }
+
       // ✅ Partial match (only for name & phone)
       else if(
         field === "customer_name" ||
@@ -353,9 +358,9 @@ function display(data){
   data.forEach(d=>{
     results.innerHTML += `
       <div class="record-card">
-        <p><strong>Brand:</strong> ${d.brand || ""}</p>
         <p><b>${d.product_type}</b></p>
         <p><strong>Unique ID:</strong> ${d.id || ""}</p>
+        Brand: ${d.brand}<br> 
         Product: ${d.product_number}<br>
         Model: ${d.model_number}<br>
         Serial: ${d.serial_number}<br>
