@@ -290,7 +290,7 @@ async function add(){
 
 // SEARCH
 async function search(){
-  const brandVal = document.getElementById("filterBrand").value.toLowerCase();
+  //const brandVal = document.getElementById("filterBrand").value.toLowerCase();
   const field = document.getElementById("searchField").value;
   const value = document.getElementById("searchValue").value.trim().toLowerCase();
   const typeVal = document.getElementById("filterType").value;
@@ -317,14 +317,12 @@ async function search(){
         matchField = fieldValue === value;
       }
 
-      else if(field === "brand"){
-        matchField = fieldValue.includes(value);
-      }
 
       // ✅ Partial match (only for name & phone)
       else if(
         field === "customer_name" ||
         field === "phone_number"
+        field === "brand"
       ){
         matchField = fieldValue.includes(value);
       }
