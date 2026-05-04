@@ -305,8 +305,7 @@ async function search(){
     if(field && value){
 
       const fieldValue = String(d[field] || "").trim().toLowerCase();
-
-      // ✅ Exact match (cleaned)
+    
       if(
         field === "id" ||
         field === "product_number" ||
@@ -315,17 +314,19 @@ async function search(){
       ){
         matchField = fieldValue === value;
       }
-
-
-      // ✅ Partial match (only for name & phone)
+    
+      else if(field === "brand"){
+        const brandValue = String(d.brand || "").trim().toLowerCase();
+        matchField = brandValue.includes(value);
+      }
+    
       else if(
         field === "customer_name" ||
-        field === "phone_number" ||
-        field === "brand"
+        field === "phone_number"
       ){
         matchField = fieldValue.includes(value);
       }
-    }
+  }
 
     const matchType =
       !typeVal || d.product_type === typeVal;
