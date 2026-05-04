@@ -290,7 +290,6 @@ async function add(){
 
 // SEARCH
 async function search(){
-  //const brandVal = document.getElementById("filterBrand").value.toLowerCase();
   const field = document.getElementById("searchField").value;
   const value = document.getElementById("searchValue").value.trim().toLowerCase();
   const typeVal = document.getElementById("filterType").value;
@@ -321,7 +320,7 @@ async function search(){
       // ✅ Partial match (only for name & phone)
       else if(
         field === "customer_name" ||
-        field === "phone_number"
+        field === "phone_number" ||
         field === "brand"
       ){
         matchField = fieldValue.includes(value);
@@ -330,9 +329,7 @@ async function search(){
 
     const matchType =
       !typeVal || d.product_type === typeVal;
-    
-    const matchBrand =
-      !brandVal || String(d.brand || "").toLowerCase().includes(brandVal);
+  
 
     const matchDate =
       !dateVal || d.date_of_repair === dateVal;
