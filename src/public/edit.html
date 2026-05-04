@@ -129,6 +129,7 @@
     function render() {
       document.getElementById("form").innerHTML = `
         ${createSelectField("Product Type", "product_type", dataObj.product_type)}
+        ${createInputField("Brand", "brand", dataObj.brand, "text")}
         ${createInputField("Product Number", "product_number", dataObj.product_number, "text")}
         ${createInputField("Model Number", "model_number", dataObj.model_number, "text")}
         ${createInputField("Serial Number", "serial_number", dataObj.serial_number, "text")}
@@ -196,6 +197,7 @@
     async function updateRecord() {
       const updated = {
         product_type: document.getElementById("product_type").value,
+        brand: document.getElementById("brand").value,
         product_number: document.getElementById("product_number").value,
         model_number: document.getElementById("model_number").value,
         serial_number: document.getElementById("serial_number").value,
