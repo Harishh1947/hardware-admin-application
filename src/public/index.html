@@ -322,8 +322,7 @@ async function search(){
     
       else if(
         field === "customer_name" ||
-        field === "phone_number" ||
-        field === "brand"
+        field === "phone_number" 
       ){
         matchField = fieldValue.includes(value);
       }
@@ -336,7 +335,7 @@ async function search(){
     const matchDate =
       !dateVal || d.date_of_repair === dateVal;
 
-    return matchField && matchType && matchDate && matchBrand;
+    return matchField && matchType && matchDate;
   });
 
   display(filtered);
